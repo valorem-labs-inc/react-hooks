@@ -1,15 +1,12 @@
 import { defineConfig } from 'vitest/config';
-// import customEnv from './vitest-environment-jsdom.js';
 
 export default defineConfig({
   test: {
     coverage: {
-      reporter: ['text', 'json', 'html'],
+      provider: 'v8',
     },
     environment: 'happy-dom',
-    environmentOptions: {
-      jsdom: {},
-    },
+    reporters: ['default', 'hanging-process'],
     include: ['**/*.test.ts', '**/*.test.tsx'],
   },
 });

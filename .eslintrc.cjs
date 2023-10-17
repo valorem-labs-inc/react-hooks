@@ -29,6 +29,7 @@ module.exports = {
     'src/lib/codegen/',
     '**/*.cjs',
     'docs',
+    'coverage',
   ],
   rules: {
     'unicorn/filename-case': 'off',

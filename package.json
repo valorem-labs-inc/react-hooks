@@ -31,26 +31,27 @@
     "prepare": "pnpm codegen",
     "prepublish": "pnpm build",
     "semantic-release": "semantic-release",
-    "test": "vitest"
+    "test": "vitest run --coverage"
   },
   "prettier": "@vercel/style-guide/prettier",
   "dependencies": {
-    "@nickadamson/sdk": "0.0.10-dev8",
-    "@tanstack/query-core": "^4.36.1",
+    "@nickadamson/sdk": "0.0.11-dev22",
+    "@tanstack/query-core": "^5.0.0",
     "@wagmi/cli": "^1.5.2",
     "viem": "^1.16.6",
-    "wagmi": "^1.4.3"
+    "wagmi": "^1.4.4"
   },
   "devDependencies": {
-    "@tanstack/react-query": "^4.36.1",
+    "@tanstack/react-query": "^5.0.0",
     "@testing-library/react": "^14.0.0",
     "@testing-library/react-hooks": "^8.0.1",
     "@types/node": "^20.8.5",
     "@types/react": "^18.0.9",
     "@types/react-dom": "^18.0.3",
     "@vercel/style-guide": "^5.0.1",
-    "@wagmi/core": "^1.4.3",
-    "abitype": "0.8.7",
+    "@vitest/coverage-v8": "^0.34.6",
+    "@wagmi/core": "^1.4.4",
+    "abitype": "0.10.1",
     "eslint": "^8.51.0",
     "happy-dom": "^12.9.1",
     "jest-environment-jsdom": "^29.7.0",
