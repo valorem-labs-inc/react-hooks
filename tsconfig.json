@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    "lib": ["es2021", "dom", "dom.iterable"],
+    "module": "ESNext",
+    "target": "es2021",
+    "noEmit": false,
+    "outDir": "dist",
+    "declaration": true,
+    "declarationMap": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "inlineSources": false,
+    "isolatedModules": true,
+    "moduleResolution": "node",
+    "skipLibCheck": true,
+    "strict": true,
+    "strictNullChecks": true,
+    "jsx": "react-jsx",
+    "types": [
+      "@wagmi/cli",
+      "@wagmi/core",
+      "@tanstack/react-query",
+      "abitype",
+      "viem"
+    ],
+    "allowJs": true,
+    "resolveJsonModule": true
+  },
+  "include": ["src", "test"],
+  "exclude": ["dist", "src/lib/trade-interfaces"]
+}

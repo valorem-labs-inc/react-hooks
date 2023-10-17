@@ -1,0 +1,10 @@
+*.log
+.DS_Store
+node_modules
+dist
+
+coverage
+
+src/lib/codegen
+
+docs
