@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "lib": ["es2021", "dom", "dom.iterable"],
+    "lib": ["es2021", "dom"],
     "module": "ESNext",
     "target": "es2021",
     "noEmit": false,
@@ -16,13 +16,7 @@
     "strict": true,
     "strictNullChecks": true,
     "jsx": "react-jsx",
-    "types": [
-      "@wagmi/cli",
-      "@wagmi/core",
-      "@tanstack/react-query",
-      "abitype",
-      "viem"
-    ],
+    "types": ["node", "@wagmi/core", "abitype", "viem"],
     "allowJs": true,
     "resolveJsonModule": true
   },

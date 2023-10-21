@@ -4,6 +4,16 @@ import {
   waitFor,
 } from '@testing-library/react';
 import { WagmiProvider } from './WagmiProvider';
+import { FC, PropsWithChildren } from 'react';
+import { ValoremProvider } from '../src';
+
+const Wrapper: FC<PropsWithChildren> = ({ children }) => {
+  return (
+    <WagmiProvider>
+      <ValoremProvider>{children}</ValoremProvider>
+    </WagmiProvider>
+  );
+};
 
 export function renderHook<TResult, TProps>(
   hook: (props: TProps) => TResult,
@@ -16,7 +26,7 @@ export function renderHook<TResult, TProps>(
     ...(wrapper_
       ? { wrapper: wrapper_ }
       : {
-          wrapper: WagmiProvider,
+          wrapper: Wrapper,
         }),
     ...options_,
   };

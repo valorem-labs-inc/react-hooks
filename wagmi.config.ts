@@ -1,9 +1,11 @@
 import {
   CLEAR_ABI,
   CLEAR_ADDRESS,
-  SEAPORT_ADDRESS,
   SEAPORT_V1_5_ABI,
-} from '@nickadamson/sdk';
+  SEAPORT_ADDRESS,
+  SEAPORT_VALIDATOR_ABI,
+  VALIDATOR_ADDRESS,
+} from '@valorem-labs-inc/sdk';
 import { defineConfig } from '@wagmi/cli';
 import { erc20ABI } from 'wagmi';
 import { react } from '@wagmi/cli/plugins';
@@ -20,6 +22,11 @@ export default defineConfig({
       name: 'Seaport',
       address: SEAPORT_ADDRESS,
       abi: SEAPORT_V1_5_ABI,
+    },
+    {
+      name: 'SeaportValidator',
+      address: VALIDATOR_ADDRESS,
+      abi: SEAPORT_VALIDATOR_ABI,
     },
     {
       name: 'ERC20',

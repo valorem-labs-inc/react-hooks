@@ -27,9 +27,12 @@ module.exports = {
     'dist/',
     '*.config.*',
     'src/lib/codegen/',
+    'src/lib/trade-interfaces/',
     '**/*.cjs',
     'docs',
     'coverage',
+    'test',
+    '*.test.ts*',
   ],
   rules: {
     'unicorn/filename-case': 'off',
