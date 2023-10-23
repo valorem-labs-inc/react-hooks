@@ -13,26 +13,35 @@ import { useLogger } from '../context/Logger';
 /**
  * Interface for the properties accepted by the useStream hook.
  */
-export interface UseStreamProps<TClient extends PromiseClient<ServiceType>> {
+export interface UseStreamConfig<
+  TService extends ServiceType,
+  TParsedResponse,
+> {
   /** The Query Client instance from react-query. */
   queryClient: QueryClient;
   /** The Query Key to use for this query in react-query. */
   queryKey: QueryKey;
   /** The gRPC client instance. */
-  grpcClient: TClient;
+  grpcClient: PromiseClient<TService>;
   /** The method of the gRPC client to be invoked. */
-  method: keyof TClient;
+  method: keyof PromiseClient<TService>;
   /** The request object to send to the gRPC stream. */
-  request?: TClient[keyof TClient]['I'];
+  request?: InstanceType<TService['methods'][keyof TService['methods']]['I']>;
   /** Flag to enable or disable the stream. Defaults to true. */
   enabled?: boolean;
   /** The timeout in milliseconds for the gRPC request. */
   timeoutMs?: number;
   /** Flag to keep the stream alive even after it ends. Defaults to true. */
   keepAlive?: boolean;
+  /** Callback function to parse responses from the gRPC stream. */
+  parseResponse?: (
+    response: InstanceType<TService['methods'][keyof TService['methods']]['O']>,
+  ) => TParsedResponse;
   /** Callback function to handle responses from the gRPC stream. */
   onResponse?: (
-    response: TClient['methods'][keyof TClient['methods']]['O'],
+    response: TParsedResponse extends undefined
+      ? InstanceType<TService['methods'][keyof TService['methods']]['O']>
+      : TParsedResponse,
   ) => void;
   /** Callback function to handle errors from the gRPC stream. */
   onError?: (err: Error) => void;
@@ -41,11 +50,13 @@ export interface UseStreamProps<TClient extends PromiseClient<ServiceType>> {
 type OpenStreamFn = () => Promise<() => void>;
 type AbortStreamFn = () => void;
 
-interface UseStreamReturn<TClient extends PromiseClient<ServiceType>> {
-  responses: TClient['methods'][keyof TClient['methods']]['O'][];
+interface UseStreamReturn<TService extends ServiceType, TParsedResponse> {
+  data?: TParsedResponse extends undefined
+    ? InstanceType<TService['methods'][keyof TService['methods']]['O']>[]
+    : TParsedResponse[];
   error?: ConnectError;
-  openStream?: OpenStreamFn;
-  abortStream?: AbortStreamFn;
+  openStream: OpenStreamFn;
+  abortStream: AbortStreamFn;
   resetAndRestartStream: () => void;
 }
 
@@ -54,7 +65,7 @@ interface UseStreamReturn<TClient extends PromiseClient<ServiceType>> {
  * This hook sets up and tears down gRPC streams, notifies about received data and potential errors,
  * and manages relevant local state.
  */
-export const useStream = <TClient extends PromiseClient<ServiceType>>({
+export const useStream = <TService extends ServiceType, TParsedResponse>({
   queryClient,
   queryKey,
   grpcClient,
@@ -63,9 +74,13 @@ export const useStream = <TClient extends PromiseClient<ServiceType>>({
   enabled = true,
   keepAlive = true,
   timeoutMs,
+  parseResponse,
   onResponse,
   onError,
-}: UseStreamProps<TClient>): UseStreamReturn<TClient> => {
+}: UseStreamConfig<TService, TParsedResponse>): UseStreamReturn<
+  TService,
+  TParsedResponse
+> => {
   const logger = useLogger();
 
   /**
@@ -77,9 +92,7 @@ export const useStream = <TClient extends PromiseClient<ServiceType>>({
   const openStreamRef = useRef<() => Promise<() => void>>();
 
   // State variables to hold the responses and error from the gRPC stream.
-  const [responses, setResponses] = useState<
-    TClient['methods'][keyof TClient['methods']]['O'][]
-  >([]);
+  const [responses, setResponses] = useState<TParsedResponse[]>([]);
   const [error, setError] = useState<ConnectError>();
 
   /**
@@ -116,10 +129,18 @@ export const useStream = <TClient extends PromiseClient<ServiceType>>({
           signal: abortControllerRef.current.signal,
           timeoutMs,
         })) {
+          let response = res;
+          if (parseResponse !== undefined) {
+            try {
+              response = parseResponse(res);
+            } catch (err) {
+              onError?.(err as Error);
+            }
+          }
           // Handle the response.
-          onResponse?.(res);
+          onResponse?.(response);
           // Update the state with the new response.
-          setResponses((prevData) => [...prevData, res]);
+          setResponses((prevData) => [response, ...prevData]);
         }
 
         // If keepAlive is false, break out of the loop once the stream ends.
@@ -152,6 +173,7 @@ export const useStream = <TClient extends PromiseClient<ServiceType>>({
     method,
     onError,
     onResponse,
+    parseResponse,
     request,
     timeoutMs,
   ]);
@@ -204,11 +226,15 @@ export const useStream = <TClient extends PromiseClient<ServiceType>>({
   }, [queryClient, queryKey, responses]);
 
   // Use react-query to update the global query state and handle refetching.
-  useQuery(
+  const { data } = useQuery(
     queryKey,
     () => {
       if (error) throw new Error(error.rawMessage);
-      return queryClient.getQueryData(queryKey);
+      const queryData = queryClient.getQueryData(queryKey);
+      return (queryData === undefined ? [] : queryData) as UseStreamReturn<
+        TService,
+        TParsedResponse
+      >['data'];
     },
     {
       refetchInterval: 1000,
@@ -217,7 +243,7 @@ export const useStream = <TClient extends PromiseClient<ServiceType>>({
 
   // Return values and functions for external use.
   return {
-    responses,
+    data,
     error,
     openStream: openStreamRef.current,
     abortStream: abortStreamRef.current,

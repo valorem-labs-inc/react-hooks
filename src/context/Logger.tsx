@@ -1,5 +1,5 @@
 /* eslint-disable no-console -- custom console */
- 
+
 import type { PropsWithChildren } from 'react';
 import { createContext, useContext, useMemo } from 'react';
 
