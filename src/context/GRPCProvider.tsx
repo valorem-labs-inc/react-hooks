@@ -40,9 +40,11 @@ export function GRPCProvider({
 
   if (useDefaultReactQueryProvider) {
     return (
-      <QueryClientProvider client={queryClient}>
-        <TransportProvider transport={transport}>{children}</TransportProvider>
-      </QueryClientProvider>
+      <TransportProvider transport={transport}>
+        <QueryClientProvider client={queryClient}>
+          {children}
+        </QueryClientProvider>
+      </TransportProvider>
     );
   }
 
