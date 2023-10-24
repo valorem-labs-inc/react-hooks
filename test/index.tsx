@@ -5,12 +5,13 @@ import {
 } from '@testing-library/react';
 import { WagmiProvider } from './WagmiProvider';
 import { FC, PropsWithChildren } from 'react';
-import { ValoremProvider } from '../src';
+import { ValoremProvider } from '../src/context';
+import { LogLevel } from '../src/context/Logger';
 
 const Wrapper: FC<PropsWithChildren> = ({ children }) => {
   return (
     <WagmiProvider>
-      <ValoremProvider>{children}</ValoremProvider>
+      <ValoremProvider logLevel={LogLevel.Debug}>{children}</ValoremProvider>
     </WagmiProvider>
   );
 };

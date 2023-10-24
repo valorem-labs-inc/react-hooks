@@ -2,9 +2,18 @@ import { useMemo } from 'react';
 import type { Address } from 'viem';
 import { useQueryClient } from '@tanstack/react-query';
 import { useChainId } from 'wagmi';
-import { fromH160ToAddress, fromH256, toH160 } from '@valorem-labs-inc/sdk';
-import type { SpotPriceResponse } from '../lib';
-import { Spot, SpotPriceInfo, SpotPriceRequest } from '../lib';
+import {
+  //   Spot,
+  //   SpotPriceInfo,
+  //   SpotPriceRequest,
+  //   SpotPriceResponse,
+  fromH160ToAddress,
+  fromH256,
+  toH160,
+} from '@valorem-labs-inc/sdk';
+import { Spot } from '../lib';
+import type { SpotPriceResponse } from '../lib/codegen/spot_pb';
+import { SpotPriceInfo, SpotPriceRequest } from '../lib/codegen/spot_pb';
 import { useStream } from './useStream';
 import { usePromiseClient } from './usePromiseClient';
 

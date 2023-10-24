@@ -54,7 +54,7 @@ interface UseStreamReturn<TService extends ServiceType, TParsedResponse> {
   data?: TParsedResponse extends undefined
     ? InstanceType<TService['methods'][keyof TService['methods']]['O']>[]
     : TParsedResponse[];
-  error?: ConnectError;
+  error?: ConnectError | Error;
   openStream: OpenStreamFn;
   abortStream: AbortStreamFn;
   resetAndRestartStream: () => void;
@@ -93,7 +93,7 @@ export const useStream = <TService extends ServiceType, TParsedResponse>({
 
   // State variables to hold the responses and error from the gRPC stream.
   const [responses, setResponses] = useState<TParsedResponse[]>([]);
-  const [error, setError] = useState<ConnectError>();
+  const [error, setError] = useState<ConnectError | Error>();
 
   /**
    * Function to abort the current stream.
@@ -150,6 +150,7 @@ export const useStream = <TService extends ServiceType, TParsedResponse>({
       // Handle errors.
       if (err instanceof Error) {
         onError?.(err);
+        setError(err);
       }
 
       if (err instanceof ConnectError) {
@@ -229,7 +230,10 @@ export const useStream = <TService extends ServiceType, TParsedResponse>({
   const { data } = useQuery(
     queryKey,
     () => {
-      if (error) throw new Error(error.rawMessage);
+      if (error)
+        throw new Error(
+          error instanceof ConnectError ? error?.rawMessage : error.toString(),
+        );
       const queryData = queryClient.getQueryData(queryKey);
       return (queryData === undefined ? [] : queryData) as UseStreamReturn<
         TService,

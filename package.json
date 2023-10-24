@@ -29,9 +29,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "prepare": "git submodule update --init --recursive && pnpm codegen",
-    "prepublish": "pnpm build",
-    "semantic-release": "semantic-release",
-    "test": "vitest run --coverage"
+    "test": "NODE_TLS_REJECT_UNAUTHORIZED=0 vitest run --coverage"
   },
   "prettier": "@vercel/style-guide/prettier",
   "dependencies": {

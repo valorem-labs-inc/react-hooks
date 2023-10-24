@@ -4,6 +4,7 @@ export default defineConfig({
   test: {
     coverage: {
       provider: 'v8',
+      exclude: ['src/lib/codegen/**'],
     },
     environment: 'happy-dom',
     reporters: ['default', 'hanging-process'],

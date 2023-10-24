@@ -1,11 +1,15 @@
+import type { NonceText } from '@valorem-labs-inc/sdk';
 import { createSIWEMessage, fromH160ToAddress } from '@valorem-labs-inc/sdk';
 import type { SIWEConfig } from 'connectkit';
-import type { PromiseClient } from '@connectrpc/connect';
+import type { ConnectError, PromiseClient } from '@connectrpc/connect';
+import type { QueryClient, QueryObserverResult } from '@tanstack/query-core';
 import type { Auth } from '../lib';
 import type { useLogger } from '../context/Logger';
 
 interface GetSIWEConfigProps {
   authClient: PromiseClient<typeof Auth>;
+  queryClient: QueryClient;
+  refetchNonce: () => Promise<QueryObserverResult<NonceText, ConnectError>>;
   address: string | undefined;
   chainId: number | undefined;
   logger: ReturnType<typeof useLogger>;
@@ -13,18 +17,12 @@ interface GetSIWEConfigProps {
 
 export const getSIWEConfig = ({
   authClient,
+  queryClient,
+  refetchNonce,
   address,
   chainId,
   logger,
 }: GetSIWEConfigProps): SIWEConfig => {
-  const getNonce = async () => {
-    try {
-      await authClient.authenticate({});
-    } catch (error) {
-      const { nonce } = await authClient.nonce({});
-      return nonce;
-    }
-  };
   const config: SIWEConfig = {
     enabled: true,
     nonceRefetchInterval: 0, // don't refetch nonce as it will create a new session
@@ -33,7 +31,18 @@ export const getSIWEConfig = ({
     signOutOnDisconnect: true,
     signOutOnNetworkChange: false,
     createMessage: createSIWEMessage as SIWEConfig['createMessage'],
-    getNonce: getNonce as () => Promise<string>,
+    async getNonce() {
+      let nonce: string | undefined = queryClient.getQueryData([
+        'valorem.trade.v1.Auth',
+        'Nonce',
+      ]);
+      if (nonce === undefined) {
+        const { data } = await refetchNonce();
+        if (data?.nonce === undefined) throw new Error('Could not fetch nonce');
+        nonce = data.nonce;
+      }
+      return nonce;
+    },
     async verifyMessage({ message, signature }) {
       const res = await authClient.verify({
         body: JSON.stringify({ message, signature }),
@@ -43,7 +52,7 @@ export const getSIWEConfig = ({
       return verifiedAddress === address?.toLowerCase();
     },
     async signOut() {
-      await authClient.nonce({});
+      await refetchNonce();
       return true;
     },
     async getSession() {
