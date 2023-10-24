@@ -8,6 +8,7 @@ export default defineConfig({
   dts: true,
   format: ['esm'],
   splitting: true,
+  treeshake: true,
   target: 'es2021',
   platform: 'browser',
   external: [...Object.keys(dependencies), ...Object.keys(peerDependencies)],

@@ -1,2 +1,1 @@
-export { ValoremProvider } from './ValoremProvider';
-export type { ValoremProviderProps } from './ValoremProvider';
+export { ValoremProvider, type ValoremProviderProps } from './ValoremProvider';
