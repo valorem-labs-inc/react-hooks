@@ -16,7 +16,7 @@ import { hexToBigInt } from 'viem';
 import { useStream } from './useStream';
 import { usePromiseClient } from './usePromiseClient';
 
-export interface UseWebTakerConfig {
+export interface UseRFQConfig {
   quoteRequest:
     | QuoteRequest
     | {
@@ -30,16 +30,17 @@ export interface UseWebTakerConfig {
   onError?: (err: Error) => void;
 }
 
-export interface UseWebTakerReturn {
+export interface UseRFQReturn {
   quotes?: ParsedQuoteResponse[];
+  error?: Error;
 }
 
-export function useWebTaker({
+export function useRFQ({
   quoteRequest,
   enabled,
   timeoutMs = 15000,
   onError,
-}: UseWebTakerConfig): UseWebTakerReturn {
+}: UseRFQConfig): UseRFQReturn {
   const grpcClient = usePromiseClient(RFQ);
   const queryClient = useQueryClient();
   const { address } = useAccount();
@@ -54,6 +55,7 @@ export function useWebTaker({
     // construct quote request from quote request config
     if (address === undefined) return undefined;
     const { tokenId, action, amount } = quoteRequest;
+
     return new QuoteRequest({
       ulid: undefined,
       takerAddress: toH160(address),
@@ -67,9 +69,9 @@ export function useWebTaker({
     });
   }, [address, chainId, quoteRequest]);
 
-  const { data } = useStream<typeof RFQ, ParsedQuoteResponse>({
+  const { data, error } = useStream<typeof RFQ, ParsedQuoteResponse>({
     queryClient,
-    queryKey: ['useWebTaker'],
+    queryKey: ['useRFQ'],
     grpcClient,
     method: 'webTaker',
     request,
@@ -80,5 +82,5 @@ export function useWebTaker({
     onError,
   });
 
-  return { quotes: data };
+  return { quotes: data, error };
 }
