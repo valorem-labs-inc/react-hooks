@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "lib": ["es2021", "dom"],
+    "module": "ESNext",
+    "target": "es2021",
+    "noEmit": false,
+    "outDir": "dist",
+    "declaration": true,
+    "declarationMap": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "inlineSources": false,
+    "isolatedModules": true,
+    "moduleResolution": "node",
+    "skipLibCheck": true,
+    "strict": true,
+    "strictNullChecks": true,
+    "jsx": "react-jsx",
+    "types": ["node", "@wagmi/core", "abitype", "viem"],
+    "allowJs": true,
+    "resolveJsonModule": true
+  },
+  "include": ["src", "test"],
+  "exclude": ["dist", "src/lib/trade-interfaces"]
+}

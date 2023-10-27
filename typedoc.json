@@ -1,0 +1,9 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "includeVersion": true,
+  "entryPoints": ["src/index.ts"],
+  "name": "Valorem React Hooks Docs",
+  "out": "docs",
+  "plugin": ["typedoc-plugin-missing-exports"],
+  "logLevel": "Verbose"
+}

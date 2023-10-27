@@ -1,0 +1,10 @@
+version: v1
+plugins:
+  - plugin: es
+    out: src/lib/codegen
+    opt:
+      - target=ts
+  - name: connect-query
+    out: src/lib/codegen
+    opt:
+      - target=ts
