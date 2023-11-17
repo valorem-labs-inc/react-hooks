@@ -45,7 +45,6 @@ jobs:
           scope: '@valorem-labs-inc'
 
       - name: Publish
-        continue-on-error: true
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: pnpm ci:release
