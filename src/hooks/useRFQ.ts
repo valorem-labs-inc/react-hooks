@@ -55,7 +55,7 @@ export function useRFQ({
     // construct quote request from quote request config
     if (address === undefined) return undefined;
     const { tokenId, action, amount } = quoteRequest;
-    if (tokenId === undefined ) return undefined
+    if (tokenId === undefined) return undefined;
 
     return new QuoteRequest({
       ulid: undefined,
