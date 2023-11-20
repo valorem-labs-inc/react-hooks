@@ -3,6 +3,8 @@ export {
   authenticate,
   nonce,
   verify,
+  session,
+  signOut,
 } from './codegen/auth-Auth_connectquery';
 export { Fees, getFeeStructure } from './codegen/fees-Fees_connectquery';
 export { RFQ } from './codegen/rfq-RFQ_connectquery';
