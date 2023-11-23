@@ -32,12 +32,12 @@
     "@tanstack/react-query": "^4.36.1",
     "@valorem-labs-inc/sdk": "^0.0.4",
     "@wagmi/cli": "^1.5.2",
-    "@wagmi/core": "^1.4.5",
+    "@wagmi/core": "^1.4.7",
     "abitype": "0.8.7",
     "connectkit": "^1.5.3",
     "siwe": "^2.1.4",
-    "viem": "^1.16.6",
-    "wagmi": "^1.4.5"
+    "viem": "^1.19.7",
+    "wagmi": "^1.4.7"
   },
   "devDependencies": {
     "@bufbuild/buf": "^1.27.1",
@@ -68,9 +68,14 @@
     "zod": "^3.22.4"
   },
   "peerDependencies": {
-    "react": ">=17.0.0",
-    "typescript": ">=5.0.4",
-    "viem": ">=0.3.35"
+    "@wagmi/core": "^1.4.7",
+    "abitype": "0.8.7",
+    "connectkit": "^1.5.3",
+    "react": "17.x || 18.x",
+    "react-dom": "17.x || 18.x",
+    "siwe": "^2.1.4",
+    "viem": "^1.19.7",
+    "wagmi": "^1.4.7"
   },
   "peerDependenciesMeta": {
     "typescript": {
