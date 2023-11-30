@@ -11,6 +11,8 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+    env:
+      CR_PAT: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
       - name: Checkout repo
