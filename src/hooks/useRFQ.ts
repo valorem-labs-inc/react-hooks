@@ -32,6 +32,10 @@ export interface UseRFQConfig {
 
 export interface UseRFQReturn {
   quotes?: ParsedQuoteResponse[];
+  responses?: ParsedQuoteResponse[];
+  openStream: () => Promise<() => void>;
+  resetAndRestartStream: () => void;
+  abortStream: () => void;
   error?: Error;
 }
 
@@ -70,7 +74,14 @@ export function useRFQ({
     });
   }, [address, chainId, quoteRequest]);
 
-  const { data, error } = useStream<typeof RFQ, ParsedQuoteResponse>({
+  const {
+    data,
+    responses,
+    openStream,
+    resetAndRestartStream,
+    abortStream,
+    error,
+  } = useStream<typeof RFQ, ParsedQuoteResponse>({
     queryClient,
     queryKey: ['useRFQ'],
     grpcClient,
@@ -83,5 +94,12 @@ export function useRFQ({
     onError,
   });
 
-  return { quotes: data, error };
+  return {
+    quotes: data,
+    responses,
+    openStream,
+    resetAndRestartStream,
+    abortStream,
+    error,
+  };
 }

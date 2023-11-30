@@ -5,7 +5,7 @@ import {
   fromH256,
 } from '@valorem-labs-inc/sdk';
 import type { SIWEConfig } from 'connectkit';
-import type { ConnectError, PromiseClient } from '@connectrpc/connect';
+import type { PromiseClient } from '@connectrpc/connect';
 import type { QueryClient } from '@tanstack/query-core';
 import type { UseQueryResult } from '@tanstack/react-query';
 import type { Auth } from '../lib';
@@ -16,10 +16,10 @@ import type { useLogger } from '../context/Logger';
 interface GetSIWEConfigProps {
   authClient: PromiseClient<typeof Auth>;
   queryClient: QueryClient;
-  nonceQuery: UseQueryResult<NonceText, ConnectError>;
-  authenticateQuery: UseQueryResult<H160, ConnectError>;
-  sessionQuery: UseQueryResult<SiweSession, ConnectError>;
-  signOutQuery: UseQueryResult<SiweSession, ConnectError>;
+  nonceQuery: UseQueryResult<NonceText>;
+  authenticateQuery: UseQueryResult<H160>;
+  sessionQuery: UseQueryResult<SiweSession>;
+  signOutQuery: UseQueryResult<SiweSession>;
   address: string | undefined;
   logger: ReturnType<typeof useLogger>;
 }

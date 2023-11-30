@@ -54,6 +54,7 @@ interface UseStreamReturn<TService extends ServiceType, TParsedResponse> {
   data?: TParsedResponse extends undefined
     ? InstanceType<TService['methods'][keyof TService['methods']]['O']>[]
     : TParsedResponse[];
+  responses: TParsedResponse[];
   error?: ConnectError | Error;
   openStream: OpenStreamFn;
   abortStream: AbortStreamFn;
@@ -87,9 +88,7 @@ export const useStream = <TService extends ServiceType, TParsedResponse>({
    * Refs are used here to keep values across renders without causing re-renders when they change.
    */
   const streamIdRef = useRef<number>(0);
-  const abortControllerRef = useRef<AbortController>();
-  const abortStreamRef = useRef<AbortStreamFn>();
-  const openStreamRef = useRef<() => Promise<() => void>>();
+  const abortControllerRef = useRef<AbortController | undefined>(undefined);
 
   // State variables to hold the responses and error from the gRPC stream.
   const [responses, setResponses] = useState<TParsedResponse[]>([]);
@@ -98,7 +97,7 @@ export const useStream = <TService extends ServiceType, TParsedResponse>({
   /**
    * Function to abort the current stream.
    */
-  const _abortStream = useCallback(() => {
+  const abortStream = useCallback(() => {
     if (abortControllerRef.current !== undefined) {
       logger.debug(`Aborting stream #${streamIdRef.current}`);
       abortControllerRef.current.abort();
@@ -107,20 +106,18 @@ export const useStream = <TService extends ServiceType, TParsedResponse>({
       logger.debug('Attempted to abort undefined stream.');
     }
   }, [logger]);
-  abortStreamRef.current = _abortStream;
 
   /**
    * Function to open a new stream.
    */
-  const _openStream = useCallback(async () => {
+  const openStream = useCallback(async () => {
     // Abort any existing stream before opening a new one.
-    abortStreamRef.current?.();
+    abortStream();
 
     // Create a new AbortController for the upcoming stream.
     abortControllerRef.current = new AbortController();
     streamIdRef.current += 1;
 
-    // Log the starting of a new stream.
     logger.debug(`Starting stream #${streamIdRef.current}`);
     try {
       while (true) {
@@ -158,6 +155,7 @@ export const useStream = <TService extends ServiceType, TParsedResponse>({
         if (connectError.code !== Code.Canceled) {
           // Handle errors (excluding cancellations)
           setError(connectError);
+          logger.warn({ connectError });
         }
       }
     }
@@ -165,9 +163,10 @@ export const useStream = <TService extends ServiceType, TParsedResponse>({
     // Cleanup function to close the stream when the component is unmounted.
     return () => {
       logger.log('closing stream in cleanup');
-      abortStreamRef.current?.();
+      abortStream();
     };
   }, [
+    abortStream,
     grpcClient,
     keepAlive,
     logger,
@@ -178,7 +177,6 @@ export const useStream = <TService extends ServiceType, TParsedResponse>({
     request,
     timeoutMs,
   ]);
-  openStreamRef.current = _openStream;
 
   // Callback to clear the query data.
   const clearQueryData = useCallback(
@@ -191,7 +189,7 @@ export const useStream = <TService extends ServiceType, TParsedResponse>({
    */
   const resetAndRestartStream = useCallback(() => {
     // Abort the current stream.
-    abortStreamRef.current?.();
+    abortStream();
     // Reset the state.
     setResponses([]);
     setError(undefined);
@@ -200,31 +198,33 @@ export const useStream = <TService extends ServiceType, TParsedResponse>({
 
     // Restart the stream after a short delay.
     setTimeout(() => {
-      void openStreamRef.current?.();
+      void openStream();
     }, 250);
-  }, [clearQueryData]);
+  }, [abortStream, clearQueryData, openStream]);
 
   /**
    * useEffect to handle the enabling and disabling of the stream based on the `enabled` prop.
    */
   useEffect(() => {
     if (!enabled && abortControllerRef.current !== undefined) {
-      abortStreamRef.current?.();
+      abortStream();
       return;
     }
     if (enabled && abortControllerRef.current === undefined) {
-      void openStreamRef.current?.();
+      void openStream();
     } else {
       logger.log('not opening/closing stream, but enabled just changed');
     }
-  }, [enabled, logger]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- purposefully not exhaustive
+  }, [/* openStream,abortStream, */ enabled, logger]);
 
   /**
    * useEffect to update the query data whenever the responses state changes.
    */
   useEffect(() => {
     queryClient.setQueryData(queryKey, responses);
-  }, [queryClient, queryKey, responses]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- purposefully not exhaustive
+  }, [/* queryClient, queryKey, */ responses]);
 
   // Use react-query to update the global query state and handle refetching.
   const { data } = useQuery(
@@ -249,8 +249,9 @@ export const useStream = <TService extends ServiceType, TParsedResponse>({
   return {
     data,
     error,
-    openStream: openStreamRef.current,
-    abortStream: abortStreamRef.current,
+    responses,
+    openStream,
+    abortStream,
     resetAndRestartStream,
   };
 };
