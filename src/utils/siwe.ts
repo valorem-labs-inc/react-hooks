@@ -89,7 +89,7 @@ export const getSIWEConfig = ({
     async getSession() {
       logger.debug('Getting session...');
       await new Promise((resolve) => {
-        setTimeout(resolve, 750);
+        setTimeout(resolve, 250);
       });
       if (
         queryClient.getQueryData(['valorem.trade.v1.Auth', 'signed-out']) ===
