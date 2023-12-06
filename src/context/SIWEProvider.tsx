@@ -20,6 +20,9 @@ const siweQueryProps = {
   refetchOnWindowFocus: false,
   refetchOnMount: false,
   refetchOnReconnect: false,
+  keepPreviousData: false,
+  cacheTime: 0,
+  staleTime: 1,
 };
 
 export function SIWEProvider({ onSignIn, onSignOut, children }: SIWEProps) {

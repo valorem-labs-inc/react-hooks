@@ -67,19 +67,47 @@ export const getSIWEConfig = ({
     },
     async signOut() {
       logger.debug('Signing out...');
-      await signOutQuery.refetch();
-      await nonceQuery.refetch();
+      try {
+        await signOutQuery.refetch();
+        queryClient.setQueryData(['valorem.trade.v1.Auth', 'Nonce'], undefined);
+        queryClient.setQueryData(
+          ['valorem.trade.v1.Auth', 'Session'],
+          undefined,
+        );
+        queryClient.setQueryData(
+          ['valorem.trade.v1.Auth', 'Authenticate'],
+          undefined,
+        );
+        queryClient.setQueryData(['valorem.trade.v1.Auth', 'signed-out'], true);
+        logger.info('Signed out');
+        return true;
+      } catch (error) {
+        logger.error('Error signing out');
+        return false;
+      }
+    },
+    async getSession() {
+      logger.debug('Getting session...');
+      await new Promise((resolve) => {
+        setTimeout(resolve, 750);
+      });
+      if (
+        queryClient.getQueryData(['valorem.trade.v1.Auth', 'signed-out']) ===
+        true
+      ) {
+        logger.debug('User is signed out');
+        queryClient.setQueryData(
+          ['valorem.trade.v1.Auth', 'signed-out'],
+          false,
+        );
+        return null;
+      }
       queryClient.setQueryData(['valorem.trade.v1.Auth', 'Nonce'], undefined);
       queryClient.setQueryData(['valorem.trade.v1.Auth', 'Session'], undefined);
       queryClient.setQueryData(
         ['valorem.trade.v1.Auth', 'Authenticate'],
         undefined,
       );
-      logger.info('Signed out');
-      return true;
-    },
-    async getSession() {
-      logger.debug('Getting session...');
 
       // check auth endpoint to ensure session is valid
       const { data: authData } = await authenticateQuery.refetch({});
@@ -90,6 +118,7 @@ export const getSIWEConfig = ({
       const authorizedAddress = fromH160ToAddress(authData);
       if (authorizedAddress.toLowerCase() !== address?.toLowerCase()) {
         logger.error('Authorized address does not match connected address');
+        return null;
       }
       // get session data
       const { data: sessionData } = await sessionQuery.refetch();
@@ -98,8 +127,12 @@ export const getSIWEConfig = ({
         return null;
       }
       const sessionAddress = fromH160ToAddress(sessionData.address);
-      if (sessionAddress.toLowerCase() === address?.toLowerCase()) {
+      if (sessionAddress.toLowerCase() === address.toLowerCase()) {
         logger.debug('Session is valid');
+        queryClient.setQueryData(
+          ['valorem.trade.v1.Auth', 'signed-out'],
+          false,
+        );
         return {
           address: sessionAddress,
           chainId: Number(fromH256(sessionData.chainId).toString()),
