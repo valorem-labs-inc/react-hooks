@@ -20,23 +20,29 @@ const getInterceptors = (logger: ReturnType<typeof useLogger>) => {
   return [loggerInterceptor];
 };
 
-const webTransport = createGrpcWebTransport({
-  baseUrl: GRPC_ENDPOINT,
-  credentials: 'include', // necessary for authentication to be set
-});
+const getWebTransport = (endpoint: string) =>
+  createGrpcWebTransport({
+    baseUrl: endpoint,
+    credentials: 'include', // necessary for authentication to be set
+  });
 
 export interface GRPCProviderProps extends PropsWithChildren {
+  endpoint?: string;
   useDefaultReactQueryProvider?: boolean;
 }
 
 export function GRPCProvider({
+  endpoint = GRPC_ENDPOINT,
   useDefaultReactQueryProvider = true,
   children,
 }: GRPCProviderProps) {
   const logger = useLogger();
   const transport: Transport = useMemo(() => {
-    return { ...webTransport, interceptors: getInterceptors(logger) };
-  }, [logger]);
+    return {
+      ...getWebTransport(endpoint),
+      interceptors: getInterceptors(logger),
+    };
+  }, [endpoint, logger]);
 
   if (useDefaultReactQueryProvider) {
     return (
