@@ -36,9 +36,9 @@
     "@types/react": "^18.2.31",
     "@types/react-dom": "^18.2.14",
     "@vercel/style-guide": "^5.0.1",
-    "@vitest/coverage-v8": "^0.34.6",
+    "@vitest/coverage-v8": "^1.0.4",
     "@wagmi/cli": "^1.5.2",
-    "@wagmi/core": "^1.4.7",
+    "@wagmi/core": "1.4.7",
     "abitype": "0.8.7",
     "connectkit": "^1.5.3",
     "eslint": "^8.52.0",
@@ -52,7 +52,7 @@
     "siwe": "^2.1.4",
     "typedoc": "^0.25.2",
     "typedoc-plugin-missing-exports": "^2.1.0",
-    "vitest": "^0.34.6"
+    "vitest": "^1.0.4"
   },
   "peerDependencies": {
     "@bufbuild/buf": "^1.27.1",
@@ -62,7 +62,7 @@
     "@connectrpc/connect-web": "^1.1.2",
     "@tanstack/react-query": "^4.36.1",
     "@valorem-labs-inc/sdk": "^0.0.4",
-    "@wagmi/core": "^1.4.7",
+    "@wagmi/core": "1.4.7",
     "abitype": "0.8.7",
     "connectkit": "^1.5.3",
     "react": "17.x || 18.x",
