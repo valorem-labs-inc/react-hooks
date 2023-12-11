@@ -7,13 +7,20 @@ import { useSIWE } from 'connectkit';
 import { useAccount, useConnect } from 'wagmi';
 import { LogLevel } from './Logger';
 
+/**
+ * Wrapper component for testing ValoremProvider.
+ * Ensures that the test component is connected via Wagmi.
+ */
 function TestWrapper({ children }: PropsWithChildren) {
   const { isConnected } = useAccount();
   const { connect, connectors } = useConnect();
+
   useEffect(() => {
     if (!isConnected) connect({ connector: connectors[0] });
   }, []);
+
   if (!isConnected) return null;
+
   return (
     <div>
       <ValoremProvider
@@ -33,6 +40,9 @@ function TestWrapper({ children }: PropsWithChildren) {
   );
 }
 
+/**
+ * Component to test the functionalities of SIWE within ValoremProvider.
+ */
 function TestInner() {
   const SIWE = useSIWE();
   const { signIn, signOut } = SIWE;
@@ -50,6 +60,9 @@ function TestInner() {
   );
 }
 
+/**
+ * Main component combining all test elements.
+ */
 function TestComponent() {
   return (
     <WagmiProvider>
@@ -81,7 +94,7 @@ describe('SIWEProvider', () => {
     signOutButton = null;
   });
 
-  // need to figure out how to persist cookie in vitest environment
+  // Tests are skipped due to environment setup requirements.
   it.skip('Should mount & load', () => {
     expect(siweStatus).toEqual(
       '{"isSignedIn":false,"status":"ready","error":null,"isRejected":false,"isError":false,"isLoading":false,"isSuccess":false,"isReady":true}',

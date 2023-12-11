@@ -47,24 +47,34 @@ export interface UseStreamConfig<
   onError?: (err: Error) => void;
 }
 
+// Type definitions for the functions to open and abort streams.
 type OpenStreamFn = () => Promise<() => void>;
 type AbortStreamFn = () => void;
 
+// Defines the return type of the `useStream` hook.
 interface UseStreamReturn<TService extends ServiceType, TParsedResponse> {
+  // Array of data received from the gRPC stream.
   data?: TParsedResponse extends undefined
     ? InstanceType<TService['methods'][keyof TService['methods']]['O']>[]
     : TParsedResponse[];
+  // Array of responses received from the gRPC stream.
   responses: TParsedResponse[];
+  // Error object representing any errors that occurred during the stream.
   error?: ConnectError | Error;
+  // Function to open a new gRPC stream.
   openStream: OpenStreamFn;
+  // Function to abort the current gRPC stream.
   abortStream: AbortStreamFn;
+  // Function to reset and restart the gRPC stream.
   resetAndRestartStream: () => void;
 }
 
 /**
- * React hook to integrate gRPC streaming into components.
- * This hook sets up and tears down gRPC streams, notifies about received data and potential errors,
- * and manages relevant local state.
+ * A React hook to manage gRPC streaming within components. It handles opening and closing streams,
+ * updating response states, and manages errors. The hook also integrates with react-query for global state management.
+ *
+ * @param config - Configuration object for the gRPC streaming process.
+ * @returns Object containing stream data, response handling functions, and any errors encountered.
  */
 export const useStream = <TService extends ServiceType, TParsedResponse>({
   queryClient,

@@ -1,15 +1,31 @@
-This is a work in progress. The API is not yet stable, and is subject to change, including breaking changes. Contributions welcome.
-
 # Valorem React Hooks
 
-Valorem is a DeFi protocol enabling physically settled or cash settled, American, European, and Exotic options.
-The Valorem React Hooks package wraps Valorem's signature relay, Seaport and Clear contract interfaces into hooks consumable by any React frontend.
+> This package provides React hooks for seamless integration with the Valorem 
+> DeFi protocol, enabling the creation of sophisticated financial applications.
+> This API is not yet stable and subject to change
 
-## Documentation
+## Table of Contents
 
-For documentation, visit [https://valorem-labs-inc.github.io/react-hooks/](https://valorem-labs-inc.github.io/react-hooks/)
+- [Background](#background)
+- [Installation](#installation)
+- [Getting Started](#getting-started)
+- [Usage](#usage)
+- [Hooks API](#hooks-api)
+- [Development](#development)
+- [Contributing](#contributing)
+- [License](#license)
+
+## Background
+
+Valorem, a versatile DeFi protocol, supports physically and cash-settled 
+options trading, including American, European, and Exotic types. The React 
+Hooks package encapsulates interactions with Valorem's signature relay, 
+Seaport, and Clear contract interfaces, offering a set of hooks for 
+intuitive use within any React frontend.
 
 ## Installation
+
+To install the package, choose one of the following commands based on your package manager:
 
 ```bash
 npm i @valorem-labs-inc/react-hooks
@@ -40,7 +56,10 @@ function App() {
 }
 ```
 
-Now you can use the hooks anywhere in your app:
+## Usage
+
+You can use the provided hooks in any component within your app. Here's an example of using 
+useRFQ and useSeaportFulfillOrder:
 
 ```tsx
 import { QuoteRequest, NULL_BYTES32 } from '@valorem-labs-inc/sdk';
@@ -99,6 +118,33 @@ function Component() {
 }
 ```
 
+## Hooks API
+
+The package offers several hooks for various aspects of options trading:
+
+- useRFQ: Request for quote from market makers.
+- useSeaportFulfillOrder: Fulfill an order via Seaport.
+  Each hook is designed to be intuitive and easy to integrate, abstracting away 
+  the complexities of the blockchain interactions.
+
+## Development
+
+For local development:
+
+Install dependencies: `pnpm i`
+Format code: `pnpm format`
+Lint code: `pnpm lint`
+Run tests: `pnpm test`
+Build the package: `pnpm build`
+
 ## Development
 
 Install dependencies with `pnpm i`, run tests with `pnpm test`, and build with `pnpm build`.
+
+## Contributing
+
+Contributions are welcome.
+
+## License
+g
+This project is licensed under MIT License. Full license text is available in the LICENSE file.

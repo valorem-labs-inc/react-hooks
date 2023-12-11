@@ -9,11 +9,15 @@ import { usePromiseClient } from '../hooks/usePromiseClient';
 import { Auth, nonce, authenticate, session, signOut } from '../lib';
 import { useLogger } from './Logger';
 
+/**
+ * Type definition for SIWEProps.
+ */
 export interface SIWEProps extends PropsWithChildren {
   onSignIn?: (data?: SIWESession) => void;
   onSignOut?: () => void;
 }
 
+// Configuration for SIWE queries.
 const siweQueryProps = {
   enabled: true,
   refetchInterval: 0,
@@ -25,12 +29,19 @@ const siweQueryProps = {
   staleTime: 1,
 };
 
+/**
+ * Provides a context for Sign-In With Ethereum (SIWE) functionality.
+ *
+ * @param props - The component properties.
+ * @returns A React component providing SIWE context.
+ */
 export function SIWEProvider({ onSignIn, onSignOut, children }: SIWEProps) {
   const { address } = useAccount();
   const logger = useLogger();
   const authClient = usePromiseClient(Auth);
   const queryClient = useQueryClient();
 
+  // Queries for nonce, authentication, session, and sign-out.
   const nonceQuery = useQuery({
     ...nonce.useQuery({}),
     ...siweQueryProps,
@@ -53,6 +64,7 @@ export function SIWEProvider({ onSignIn, onSignOut, children }: SIWEProps) {
     enabled: false,
   });
 
+  // Configuration for the SIWE process.
   const siweConfig = useMemo(() => {
     return getSIWEConfig({
       authClient,
@@ -75,6 +87,7 @@ export function SIWEProvider({ onSignIn, onSignOut, children }: SIWEProps) {
     logger,
   ]);
 
+  // Return null while nonce is initially loading.
   if (nonceQuery.isInitialLoading) return null;
 
   return (
