@@ -5,12 +5,22 @@ import type { GRPCProviderProps } from './GRPCProvider';
 import { GRPCProvider } from './GRPCProvider';
 import { LogLevel, LoggerProvider } from './Logger';
 
+/**
+ * Defines the properties for the ValoremProvider component.
+ */
 export interface ValoremProviderProps extends PropsWithChildren {
   grpcConfig?: GRPCProviderProps;
   siweConfig?: SIWEProps;
   logLevel?: LogLevel;
 }
 
+/**
+ * Provides a context for the Valorem application including gRPC, SIWE,
+ * and logging functionalities.
+ *
+ * @param props - Component properties.
+ * @returns A React component providing context for Valorem functionalities.
+ */
 export function ValoremProvider({
   grpcConfig,
   siweConfig,

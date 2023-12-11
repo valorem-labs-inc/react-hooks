@@ -17,6 +17,9 @@ import { SpotPriceInfo, SpotPriceRequest } from '../lib/codegen/spot_pb';
 import { useStream } from './useStream';
 import { usePromiseClient } from './usePromiseClient';
 
+/**
+ * Represents a token with its address, symbol, and optional decimals and chain ID.
+ */
 interface Token {
   address: Address;
   symbol: string;
@@ -28,6 +31,11 @@ type TokensArr = Readonly<Token[]> | Token[] | undefined;
 
 type Price = bigint | undefined;
 
+/**
+ * Configuration for the useSpotPrice hook.
+ * spotPriceRequest - An object containing the tokens and chain ID for the spot price request.
+ * enabled - Flag to enable the hook.
+ */
 export interface UseSpotPriceConfig<TToken extends TokensArr> {
   spotPriceRequest?: {
     tokens: NonNullable<TToken>;
@@ -36,14 +44,28 @@ export interface UseSpotPriceConfig<TToken extends TokensArr> {
   enabled?: boolean;
 }
 
+/**
+ * Infers the symbols from the provided token array.
+ */
 type InferSymbols<TTokens extends TokensArr> = TTokens extends undefined
   ? 'USDC' | 'WETH'
   : NonNullable<TTokens>[number]['symbol'];
 
+/**
+ * The return type of the useSpotPrice hook.
+ * spotPrices - An object mapping each token symbol to its spot price.
+ */
 export interface UseSpotPriceReturn<TTokens extends TokensArr> {
   spotPrices?: Record<InferSymbols<TTokens>, Price | undefined>;
 }
 
+/**
+ * Hook for fetching live spot prices for ERC20 tokens.
+ * It subscribes to a stream of spot price updates and provides the latest prices.
+ *
+ * @param config - Configuration for fetching spot prices.
+ * @returns An object containing the latest spot prices for the requested tokens.
+ */
 export function useSpotPrice<TTokens extends TokensArr>({
   spotPriceRequest,
   enabled,

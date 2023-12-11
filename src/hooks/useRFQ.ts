@@ -16,6 +16,13 @@ import { hexToBigInt } from 'viem';
 import { useStream } from './useStream';
 import { usePromiseClient } from './usePromiseClient';
 
+/**
+ * Configuration for the useRFQ hook.
+ * quoteRequest - An object or instance containing the details for requesting a quote.
+ * enabled - Flag to enable the hook.
+ * timeoutMs - Timeout for the quote request in milliseconds.
+ * onError - Callback function for handling errors.
+ */
 export interface UseRFQConfig {
   quoteRequest:
     | QuoteRequest
@@ -30,8 +37,18 @@ export interface UseRFQConfig {
   onError?: (err: Error) => void;
 }
 
+/**
+ * Return type of the useRFQ hook.
+ * quotes - Array of parsed quote responses.
+ * responses - Array of raw quote responses.
+ * openStream - Function to open the stream for receiving quotes.
+ * resetAndRestartStream - Function to reset and restart the quote stream.
+ * abortStream - Function to abort the quote stream.
+ * error - Error object if an error occurred during the RFQ process.
+ */
 export interface UseRFQReturn {
   quotes?: ParsedQuoteResponse[];
+  // TODO(What is the difference between quotes and responses?)
   responses?: ParsedQuoteResponse[];
   openStream: () => Promise<() => void>;
   resetAndRestartStream: () => void;
@@ -39,6 +56,12 @@ export interface UseRFQReturn {
   error?: Error;
 }
 
+/**
+ * Hook to manage the Request for Quote (RFQ) process in the Valorem trading environment.
+ * It handles sending quote requests to market makers and receiving their responses.
+ * @param config - Configuration for the RFQ process.
+ * @returns An object containing the quotes, response management functions, and any errors.
+ */
 export function useRFQ({
   quoteRequest,
   enabled,
