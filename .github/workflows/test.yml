@@ -8,11 +8,15 @@ on:
       - 'v**'
       - 'releases/v**'
 
+permissions:
+  packages: read
+  contents: read
+
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
     env:
-      CR_PAT: ${{ secrets.GITHUB_TOKEN }}
+      GHP_PAT: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
       - name: Checkout repo
