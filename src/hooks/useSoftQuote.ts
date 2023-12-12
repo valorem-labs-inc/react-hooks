@@ -108,7 +108,7 @@ export const useSoftQuote = ({
     error,
   } = useStream<typeof SoftQuote, ParsedSoftQuoteResponse>({
     queryClient,
-    queryKey: ['useRFQ'],
+    queryKey: ['useSoftQuote'],
     grpcClient,
     method: 'webTaker',
     request,
