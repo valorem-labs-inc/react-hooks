@@ -17,6 +17,7 @@
     "codegen": "rm -rf ./src/lib/codegen && wagmi generate && npx buf generate",
     "format": "prettier --write \"**/*.{ts,tsx,md,json}\"",
     "gen-docs": "typedoc",
+    "generate:grpc": "npx buf generate",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "prepare": "git submodule update --init --recursive && pnpm codegen",
