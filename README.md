@@ -1,6 +1,6 @@
 # Valorem React Hooks
 
-> This package provides React hooks for seamless integration with the Valorem 
+> This package provides React hooks for seamless integration with the Valorem
 > DeFi protocol, enabling the creation of sophisticated financial applications.
 > This API is not yet stable and subject to change
 
@@ -17,10 +17,10 @@
 
 ## Background
 
-Valorem, a versatile DeFi protocol, supports physically and cash-settled 
-options trading, including American, European, and Exotic types. The React 
-Hooks package encapsulates interactions with Valorem's signature relay, 
-Seaport, and Clear contract interfaces, offering a set of hooks for 
+Valorem, a versatile DeFi protocol, supports physically and cash-settled
+options trading, including American, European, and Exotic types. The React
+Hooks package encapsulates interactions with Valorem's signature relay,
+Seaport, and Clear contract interfaces, offering a set of hooks for
 intuitive use within any React frontend.
 
 ## Installation
@@ -58,7 +58,7 @@ function App() {
 
 ## Usage
 
-You can use the provided hooks in any component within your app. Here's an example of using 
+You can use the provided hooks in any component within your app. Here's an example of using
 useRFQ and useSeaportFulfillOrder:
 
 ```tsx
@@ -124,7 +124,7 @@ The package offers several hooks for various aspects of options trading:
 
 - useRFQ: Request for quote from market makers.
 - useSeaportFulfillOrder: Fulfill an order via Seaport.
-  Each hook is designed to be intuitive and easy to integrate, abstracting away 
+  Each hook is designed to be intuitive and easy to integrate, abstracting away
   the complexities of the blockchain interactions.
 
 ## Development
@@ -146,5 +146,6 @@ Install dependencies with `pnpm i`, run tests with `pnpm test`, and build with `
 Contributions are welcome.
 
 ## License
+
 g
 This project is licensed under MIT License. Full license text is available in the LICENSE file.
