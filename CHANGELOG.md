@@ -1,5 +1,11 @@
 # @valorem-labs-inc/react-hooks
 
+## 0.0.6
+
+### Patch Changes
+
+- update wagmi to v1.4.12
+
 ## 0.0.5
 
 ### Patch Changes

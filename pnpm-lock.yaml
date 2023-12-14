@@ -36,8 +36,8 @@ dependencies:
     specifier: ^1.19.15
     version: 1.19.15(typescript@5.3.3)(zod@3.22.4)
   wagmi:
-    specifier: ^1.4.7
-    version: 1.4.7(@types/react@18.2.45)(react-dom@18.2.0)(react@18.2.0)(typescript@5.3.3)(viem@1.19.15)(zod@3.22.4)
+    specifier: ^1.4.12
+    version: 1.4.12(@types/react@18.2.45)(react-dom@18.2.0)(react@18.2.0)(typescript@5.3.3)(viem@1.19.15)(zod@3.22.4)
   zod:
     specifier: ^3.22.4
     version: 3.22.4
@@ -84,7 +84,7 @@ devDependencies:
     version: 1.0.4(vitest@1.0.4)
   '@wagmi/cli':
     specifier: ^1.5.2
-    version: 1.5.2(@wagmi/core@1.4.12)(typescript@5.3.3)(wagmi@1.4.7)
+    version: 1.5.2(@wagmi/core@1.4.12)(typescript@5.3.3)(wagmi@1.4.12)
   '@wagmi/core':
     specifier: ^1.4.12
     version: 1.4.12(@types/react@18.2.45)(react@18.2.0)(typescript@5.3.3)(viem@1.19.15)(zod@3.22.4)
@@ -93,7 +93,7 @@ devDependencies:
     version: 0.8.7(typescript@5.3.3)(zod@3.22.4)
   connectkit:
     specifier: ^1.5.3
-    version: 1.5.3(@babel/core@7.23.6)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(viem@1.19.15)(wagmi@1.4.7)
+    version: 1.5.3(@babel/core@7.23.6)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(viem@1.19.15)(wagmi@1.4.12)
   eslint:
     specifier: ^8.55.0
     version: 8.55.0
@@ -3487,7 +3487,7 @@ packages:
       pretty-format: 29.7.0
     dev: true
 
-  /@wagmi/cli@1.5.2(@wagmi/core@1.4.12)(typescript@5.3.3)(wagmi@1.4.7):
+  /@wagmi/cli@1.5.2(@wagmi/core@1.4.12)(typescript@5.3.3)(wagmi@1.4.12):
     resolution: {integrity: sha512-UfLMYhW6mQBCjR8A5s01Chf9GpHzdpcuuBuzJ36QGXcMSJAxylz5ImVZWfCRV0ct1UruydjKVSW1QSI6azNxRQ==}
     engines: {node: '>=14'}
     hasBin: true
@@ -3526,7 +3526,7 @@ packages:
       prettier: 2.8.8
       typescript: 5.3.3
       viem: 1.19.9(typescript@5.3.3)(zod@3.22.4)
-      wagmi: 1.4.7(@types/react@18.2.45)(react-dom@18.2.0)(react@18.2.0)(typescript@5.3.3)(viem@1.19.15)(zod@3.22.4)
+      wagmi: 1.4.12(@types/react@18.2.45)(react-dom@18.2.0)(react@18.2.0)(typescript@5.3.3)(viem@1.19.15)(zod@3.22.4)
       zod: 3.22.4
     transitivePeerDependencies:
       - bufferutil
@@ -4818,7 +4818,7 @@ packages:
     resolution: {integrity: sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg==}
     dev: true
 
-  /connectkit@1.5.3(@babel/core@7.23.6)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(viem@1.19.15)(wagmi@1.4.7):
+  /connectkit@1.5.3(@babel/core@7.23.6)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(viem@1.19.15)(wagmi@1.4.12):
     resolution: {integrity: sha512-vXneVOa+oit5Migoxca2QkgVBHaROItzb2kW13o7aUrcEcecYIGZjsizsVM2YvIdKihyWs+zJFrlED4g8zAMew==}
     engines: {node: '>=12.4'}
     peerDependencies:
@@ -4838,7 +4838,7 @@ packages:
       resize-observer-polyfill: 1.5.1
       styled-components: 5.3.11(@babel/core@7.23.6)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)
       viem: 1.19.15(typescript@5.3.3)(zod@3.22.4)
-      wagmi: 1.4.7(@types/react@18.2.45)(react-dom@18.2.0)(react@18.2.0)(typescript@5.3.3)(viem@1.19.15)(zod@3.22.4)
+      wagmi: 1.4.12(@types/react@18.2.45)(react-dom@18.2.0)(react@18.2.0)(typescript@5.3.3)(viem@1.19.15)(zod@3.22.4)
     transitivePeerDependencies:
       - '@babel/core'
       - react-is
@@ -10147,8 +10147,8 @@ packages:
       xml-name-validator: 5.0.0
     dev: true
 
-  /wagmi@1.4.7(@types/react@18.2.45)(react-dom@18.2.0)(react@18.2.0)(typescript@5.3.3)(viem@1.19.15)(zod@3.22.4):
-    resolution: {integrity: sha512-/k8gA9S6RnwU6Qroxs630jAFvRIx+DSKpCP1owgAEGWc7D2bAJHljwRSCRTGENz48HyJ4V3R7KYV1yImxPvM3A==}
+  /wagmi@1.4.12(@types/react@18.2.45)(react-dom@18.2.0)(react@18.2.0)(typescript@5.3.3)(viem@1.19.15)(zod@3.22.4):
+    resolution: {integrity: sha512-QRxpjhdMlZmbYTfn9VQkQMKq+l3kwA1O7tF10vaykPrjbGX+IIlyn72ib9oqW9BfQO7n/Sf/mnVz1zbxRhGPWA==}
     peerDependencies:
       react: '>=17.0.0'
       typescript: '>=5.0.4'
