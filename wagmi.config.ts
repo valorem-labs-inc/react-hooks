@@ -15,7 +15,12 @@ export default defineConfig({
   contracts: [
     {
       name: 'Clear',
-      address: CLEAR_ADDRESS,
+      address: {
+        1: CLEAR_ADDRESS,
+        42161: CLEAR_ADDRESS,
+        421613: CLEAR_ADDRESS,
+        31337: '0x9f13A8276F0cc1e85F0f62c67Cf9f4f940d7D20d',
+      },
       abi: CLEAR_ABI,
     },
     {
