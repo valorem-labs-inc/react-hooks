@@ -84,5 +84,10 @@
   "packageManager": "pnpm@8.12.1",
   "engines": {
     "node": ">=18"
+  },
+  "pnpm": {
+    "overrides": {
+      "@wagmi/core": "^1.4.12"
+    }
   }
 }
