@@ -27,17 +27,18 @@ const getInterceptors = (logger: ReturnType<typeof useLogger>) => {
   return [loggerInterceptor];
 };
 
-// Create gRPC-web transport with the given configuration.
-const webTransport = createGrpcWebTransport({
-  baseUrl: GRPC_ENDPOINT,
-  credentials: 'include', // Necessary for authentication to be set.
-});
+const getWebTransport = (endpoint: string) =>
+  createGrpcWebTransport({
+    baseUrl: endpoint,
+    credentials: 'include', // necessary for authentication to be set
+  });
 
 /**
  * Props for the GRPCProvider component.
  */
 export interface GRPCProviderProps extends PropsWithChildren {
-  useDefaultReactQueryProvider?: boolean; // Whether to use the default React Query Provider.
+  endpoint?: string;
+  useDefaultReactQueryProvider?: boolean;
 }
 
 /**
@@ -48,14 +49,17 @@ export interface GRPCProviderProps extends PropsWithChildren {
  * @returns The component wrapped with the TransportProvider and optionally the QueryClientProvider.
  */
 export function GRPCProvider({
-  useDefaultReactQueryProvider = true, // Default to true to use the QueryClientProvider.
+  endpoint = GRPC_ENDPOINT,
+  useDefaultReactQueryProvider = true,
   children,
 }: GRPCProviderProps) {
   const logger = useLogger(); // Use the logger context.
   const transport: Transport = useMemo(() => {
-    // Memoize the transport to avoid unnecessary re-renders.
-    return { ...webTransport, interceptors: getInterceptors(logger) };
-  }, [logger]);
+    return {
+      ...getWebTransport(endpoint),
+      interceptors: getInterceptors(logger),
+    };
+  }, [endpoint, logger]);
 
   // If the default React Query Provider is to be used, wrap children with both
   // the TransportProvider and the QueryClientProvider.
