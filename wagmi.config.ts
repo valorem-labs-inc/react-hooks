@@ -10,12 +10,19 @@ import { defineConfig } from '@wagmi/cli';
 import { erc20ABI } from 'wagmi';
 import { react } from '@wagmi/cli/plugins';
 
+const FOUNDRY_CLEAR_ADDRESS = '0x9f13A8276F0cc1e85F0f62c67Cf9f4f940d7D20d';
+
 export default defineConfig({
   out: 'src/lib/codegen/wagmi.ts',
   contracts: [
     {
       name: 'Clear',
-      address: CLEAR_ADDRESS,
+      address: {
+        1: CLEAR_ADDRESS,
+        42161: CLEAR_ADDRESS,
+        421613: CLEAR_ADDRESS,
+        31337: FOUNDRY_CLEAR_ADDRESS,
+      },
       abi: CLEAR_ABI,
     },
     {

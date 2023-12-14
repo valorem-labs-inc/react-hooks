@@ -26,7 +26,7 @@ import { usePromiseClient } from './usePromiseClient';
  * timeoutMs - Timeout for the quote request in milliseconds.
  * onError - Callback function for handling errors.
  */
-export interface UseRFQConfig {
+export interface UseSoftQuoteConfig {
   quoteRequest:
     | QuoteRequest
     | {
@@ -49,7 +49,7 @@ export interface UseRFQConfig {
  * abortStream - Function to abort the quote stream.
  * error - Error object if an error occurred during the RFQ process.
  */
-export interface UseRFQReturn {
+export interface UseSoftQuoteReturn {
   quotes?: ParsedSoftQuoteResponse[];
   responses?: ParsedSoftQuoteResponse[];
   openStream: () => Promise<() => void>;
@@ -69,7 +69,7 @@ export const useSoftQuote = ({
   enabled,
   timeoutMs = 15000,
   onError,
-}: UseRFQConfig): UseRFQReturn => {
+}: UseSoftQuoteConfig): UseSoftQuoteReturn => {
   const grpcClient = usePromiseClient(SoftQuote);
   const queryClient = useQueryClient();
   const { address } = useAccount();
