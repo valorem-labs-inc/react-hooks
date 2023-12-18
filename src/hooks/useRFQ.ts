@@ -42,7 +42,7 @@ export interface UseRFQConfig {
  * quotes - Array of parsed quote responses.
  * responses - Array of raw quote responses.
  * openStream - Function to open the stream for receiving quotes.
- * resetAndRestartStream - Function to reset and restart the quote stream.
+ * restartStream - Function to reset and restart the quote stream.
  * abortStream - Function to abort the quote stream.
  * error - Error object if an error occurred during the RFQ process.
  */
@@ -51,7 +51,7 @@ export interface UseRFQReturn {
   // TODO(What is the difference between quotes and responses?)
   responses?: ParsedQuoteResponse[];
   openStream: () => Promise<() => void>;
-  resetAndRestartStream: () => void;
+  restartStream: () => void;
   abortStream: () => void;
   error?: Error;
 }
@@ -97,31 +97,25 @@ export function useRFQ({
     });
   }, [address, chainId, quoteRequest]);
 
-  const {
-    data,
-    responses,
-    openStream,
-    resetAndRestartStream,
-    abortStream,
-    error,
-  } = useStream<typeof RFQ, ParsedQuoteResponse>({
-    queryClient,
-    queryKey: ['useRFQ'],
-    grpcClient,
-    method: 'webTaker',
-    request,
-    enabled: enabled && request !== undefined,
-    keepAlive: true,
-    timeoutMs,
-    parseResponse: parseQuoteResponse,
-    onError,
-  });
+  const { data, responses, openStream, restartStream, abortStream, error } =
+    useStream<typeof RFQ, ParsedQuoteResponse>({
+      queryClient,
+      queryKey: ['useRFQ'],
+      grpcClient,
+      method: 'webTaker',
+      request,
+      enabled: enabled && request !== undefined,
+      keepAlive: true,
+      timeoutMs,
+      parseResponse: parseQuoteResponse,
+      onError,
+    });
 
   return {
     quotes: data,
     responses,
     openStream,
-    resetAndRestartStream,
+    restartStream,
     abortStream,
     error,
   };

@@ -45,7 +45,7 @@ export interface UseSoftQuoteConfig {
  * quotes - Array of parsed quote responses.
  * responses - Array of raw quote responses.
  * openStream - Function to open the stream for receiving quotes.
- * resetAndRestartStream - Function to reset and restart the quote stream.
+ * restartStream - Function to reset and restart the quote stream.
  * abortStream - Function to abort the quote stream.
  * error - Error object if an error occurred during the RFQ process.
  */
@@ -53,7 +53,7 @@ export interface UseSoftQuoteReturn {
   quotes?: ParsedSoftQuoteResponse[];
   responses?: ParsedSoftQuoteResponse[];
   openStream: () => Promise<() => void>;
-  resetAndRestartStream: () => void;
+  restartStream: () => void;
   abortStream: () => void;
   error?: Error;
 }
@@ -99,31 +99,25 @@ export const useSoftQuote = ({
     });
   }, [address, chainId, quoteRequest]);
 
-  const {
-    data,
-    responses,
-    openStream,
-    resetAndRestartStream,
-    abortStream,
-    error,
-  } = useStream<typeof SoftQuote, ParsedSoftQuoteResponse>({
-    queryClient,
-    queryKey: ['useSoftQuote'],
-    grpcClient,
-    method: 'webTaker',
-    request,
-    enabled: enabled && request !== undefined,
-    keepAlive: true,
-    timeoutMs,
-    parseResponse: parseSoftQuoteResponse,
-    onError,
-  });
+  const { data, responses, openStream, restartStream, abortStream, error } =
+    useStream<typeof SoftQuote, ParsedSoftQuoteResponse>({
+      queryClient,
+      queryKey: ['useSoftQuote'],
+      grpcClient,
+      method: 'webTaker',
+      request,
+      enabled: enabled && request !== undefined,
+      keepAlive: true,
+      timeoutMs,
+      parseResponse: parseSoftQuoteResponse,
+      onError,
+    });
 
   return {
     quotes: data,
     responses,
     openStream,
-    resetAndRestartStream,
+    restartStream,
     abortStream,
     error,
   };

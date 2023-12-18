@@ -1,4 +1,3 @@
-/* eslint-disable no-constant-condition -- needed for streams */
 /* eslint-disable @typescript-eslint/no-unnecessary-condition -- needed for streams */
 /* eslint-disable no-await-in-loop -- needed for streams */
 
@@ -66,7 +65,7 @@ interface UseStreamReturn<TService extends ServiceType, TParsedResponse> {
   // Function to abort the current gRPC stream.
   abortStream: AbortStreamFn;
   // Function to reset and restart the gRPC stream.
-  resetAndRestartStream: () => void;
+  restartStream: () => void;
 }
 
 /**
@@ -118,6 +117,17 @@ export const useStream = <TService extends ServiceType, TParsedResponse>({
   }, [logger]);
 
   /**
+   * Function to reset and restart the stream.
+   */
+  const resetStream = useCallback(() => {
+    // Abort the current stream.
+    abortStream();
+    // Reset the state.
+    setResponses([]);
+    setError(undefined);
+  }, [abortStream]);
+
+  /**
    * Function to open a new stream.
    */
   const openStream = useCallback(async () => {
@@ -130,7 +140,7 @@ export const useStream = <TService extends ServiceType, TParsedResponse>({
 
     logger.debug(`Starting stream #${streamIdRef.current}`);
     try {
-      while (true) {
+      while (enabled) {
         // @ts-expect-error never is not callable
         for await (const res of grpcClient[method](request, {
           signal: abortControllerRef.current.signal,
@@ -172,20 +182,20 @@ export const useStream = <TService extends ServiceType, TParsedResponse>({
 
     // Cleanup function to close the stream when the component is unmounted.
     return () => {
-      logger.log('closing stream in cleanup');
-      abortStream();
+      logger.log('Closing stream in cleanup...');
+      resetStream();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- purposefully not exhaustive
   }, [
-    abortStream,
-    grpcClient,
+    /* logger, parseResponse, timeoutMs */ grpcClient,
     keepAlive,
-    logger,
     method,
     onError,
     onResponse,
-    parseResponse,
     request,
-    timeoutMs,
+    enabled,
+    resetStream,
+    abortStream,
   ]);
 
   // Callback to clear the query data.
@@ -197,20 +207,16 @@ export const useStream = <TService extends ServiceType, TParsedResponse>({
   /**
    * Function to reset and restart the stream.
    */
-  const resetAndRestartStream = useCallback(() => {
-    // Abort the current stream.
-    abortStream();
-    // Reset the state.
-    setResponses([]);
-    setError(undefined);
+  const restartStream = useCallback(() => {
+    // reset the stream
+    resetStream();
     // Clear the query data.
     clearQueryData();
-
     // Restart the stream after a short delay.
     setTimeout(() => {
       void openStream();
     }, 250);
-  }, [abortStream, clearQueryData, openStream]);
+  }, [clearQueryData, openStream, resetStream]);
 
   /**
    * useEffect to handle the enabling and disabling of the stream based on the `enabled` prop.
@@ -226,7 +232,7 @@ export const useStream = <TService extends ServiceType, TParsedResponse>({
       logger.log('not opening/closing stream, but enabled just changed');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- purposefully not exhaustive
-  }, [/* openStream,abortStream, */ enabled, logger]);
+  }, [/* openStream,abortStream, logger, */ enabled]);
 
   /**
    * useEffect to update the query data whenever the responses state changes.
@@ -262,6 +268,6 @@ export const useStream = <TService extends ServiceType, TParsedResponse>({
     responses,
     openStream,
     abortStream,
-    resetAndRestartStream,
+    restartStream,
   };
 };
