@@ -33,6 +33,7 @@ module.exports = {
     'coverage',
     'test',
     '*.test.ts*',
+    'package.json',
   ],
   rules: {
     'unicorn/filename-case': 'off',
