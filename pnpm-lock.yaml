@@ -27,8 +27,8 @@ dependencies:
     specifier: ^4.36.1
     version: 4.36.1(react-dom@18.2.0)(react@18.2.0)
   '@valorem-labs-inc/sdk':
-    specifier: ^0.0.9
-    version: 0.0.9(@bufbuild/protobuf@1.6.0)(@connectrpc/connect@1.2.0)(@wagmi/core@1.4.12)(typescript@5.3.3)(viem@1.19.15)
+    specifier: ^0.0.10-alpha.1
+    version: 0.0.10-alpha.1(@bufbuild/protobuf@1.6.0)(@connectrpc/connect@1.2.0)(@wagmi/core@1.4.12)(typescript@5.3.3)(viem@1.19.15)
   typescript:
     specifier: ^5.3.0
     version: 5.3.3
@@ -3358,8 +3358,8 @@ packages:
     resolution: {integrity: sha512-zuVdFrMJiuCDQUMCzQaD6KL28MjnqqN8XnAqiEq9PNm/hCPTSGfrXCOfwj1ow4LFb/tNymJPwsNbVePc1xFqrQ==}
     dev: true
 
-  /@valorem-labs-inc/sdk@0.0.9(@bufbuild/protobuf@1.6.0)(@connectrpc/connect@1.2.0)(@wagmi/core@1.4.12)(typescript@5.3.3)(viem@1.19.15):
-    resolution: {integrity: sha512-T8/2yKb/r/oYLsUgzx5zyfx2a1V6lR41gCImdSK5+JXAoIlHsaExgMiU44cs8cQ2cP7mbFy1P5Zmkzv0Sp65bA==, tarball: https://npm.pkg.github.com/download/@valorem-labs-inc/sdk/0.0.9/fd36feb5897b06da1ed718bd12e266e24a643e36}
+  /@valorem-labs-inc/sdk@0.0.10-alpha.1(@bufbuild/protobuf@1.6.0)(@connectrpc/connect@1.2.0)(@wagmi/core@1.4.12)(typescript@5.3.3)(viem@1.19.15):
+    resolution: {integrity: sha512-cCG2sTfeaV8u1GNpI9ysn2pyCY0rOwHHUjhX8/ia7WXJZP+qWdzR6FmNV26CScdwdsqicet82Iq88N/bu90gDw==, tarball: https://npm.pkg.github.com/download/@valorem-labs-inc/sdk/0.0.10-alpha.1/e535db59ceb8252bb17283107e9811cfa7b350a6}
     engines: {node: '>=18'}
     peerDependencies:
       '@bufbuild/protobuf': ^1.6.0
@@ -3367,13 +3367,12 @@ packages:
       '@wagmi/core': ^1.4.12
       typescript: ^5.3.0
       viem: ^1.19.15
-    peerDependenciesMeta:
-      typescript:
-        optional: true
     dependencies:
       '@bufbuild/protobuf': 1.6.0
       '@connectrpc/connect': 1.2.0(@bufbuild/protobuf@1.6.0)
       '@wagmi/core': 1.4.12(@types/react@18.2.45)(react@18.2.0)(typescript@5.3.3)(viem@1.19.15)(zod@3.22.4)
+      date-fns: 3.0.0
+      graphql: 16.8.1
       mathjs: 12.2.0
       typescript: 5.3.3
       viem: 1.19.15(typescript@5.3.3)(zod@3.22.4)
@@ -5027,6 +5026,10 @@ packages:
       whatwg-url: 14.0.0
     dev: true
 
+  /date-fns@3.0.0:
+    resolution: {integrity: sha512-xjDz3rNN9jp+Lh3P/4MeY4E5HkaRnEnrJCcrdRZnKdn42gJlIe6hwrrwVXePRwVR2kh1UcMnz00erYBnHF8PFA==}
+    dev: false
+
   /debounce@1.2.1:
     resolution: {integrity: sha512-XRRe6Glud4rd/ZGQfiV1ruXSfbvfJedlV9Y6zOlP+2K04vBYiJEte6stfFkCP03aMnY5tsipamumUjL14fofug==}
     dev: true
@@ -6465,6 +6468,11 @@ packages:
   /graphemer@1.4.0:
     resolution: {integrity: sha512-EtKwoO6kxCL9WO5xipiHTZlSzBm7WLT627TqC/uVRd0HKmq8NXyebnNYxDoBi7wt8eTWrUrKXCOVaFq9x1kgag==}
     dev: true
+
+  /graphql@16.8.1:
+    resolution: {integrity: sha512-59LZHPdGZVh695Ud9lRzPBVTtlX9ZCV150Er2W43ro37wVof0ctenSaskPPjN7lVTIN8mSZt8PHUNKZuNQUuxw==}
+    engines: {node: ^12.22.0 || ^14.16.0 || ^16.0.0 || >=17.0.0}
+    dev: false
 
   /h3@1.9.0:
     resolution: {integrity: sha512-+F3ZqrNV/CFXXfZ2lXBINHi+rM4Xw3CDC5z2CDK3NMPocjonKipGLLDSkrqY9DOrioZNPTIdDMWfQKm//3X2DA==}
