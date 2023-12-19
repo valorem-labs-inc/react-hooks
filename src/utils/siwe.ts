@@ -1,4 +1,4 @@
-import type { NonceText } from '@valorem-labs-inc/sdk';
+import type { Auth, H160, NonceText, SiweSession } from '@valorem-labs-inc/sdk';
 import {
   createSIWEMessage,
   fromH160ToAddress,
@@ -8,9 +8,6 @@ import type { SIWEConfig } from 'connectkit';
 import type { PromiseClient } from '@connectrpc/connect';
 import type { QueryClient } from '@tanstack/query-core';
 import type { UseQueryResult } from '@tanstack/react-query';
-import type { Auth } from '../lib';
-import type { SiweSession } from '../lib/codegen/auth_pb';
-import type { H160 } from '../lib/codegen/types_pb';
 import type { useLogger } from '../context/Logger';
 
 /**

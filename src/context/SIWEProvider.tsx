@@ -6,7 +6,13 @@ import { useAccount } from 'wagmi';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getSIWEConfig } from '../utils/siwe';
 import { usePromiseClient } from '../hooks/usePromiseClient';
-import { Auth, nonce, authenticate, session, signOut } from '../lib';
+import {
+  signOut,
+  session,
+  authenticate,
+  nonce,
+  Auth,
+} from '../lib/codegen/auth-Auth_connectquery';
 import { useLogger } from './Logger';
 
 /**
