@@ -34,6 +34,7 @@ export interface UseRFQConfig {
     | undefined;
   enabled?: boolean;
   timeoutMs?: number;
+  onResponse?: (response: ParsedQuoteResponse) => void;
   onError?: (err: Error) => void;
 }
 
@@ -54,6 +55,7 @@ export interface UseRFQReturn {
   restartStream: () => void;
   abortStream: () => void;
   error?: Error;
+  isStreaming: boolean;
 }
 
 /**
@@ -66,6 +68,7 @@ export function useRFQ({
   quoteRequest,
   enabled,
   timeoutMs = 15000,
+  onResponse,
   onError,
 }: UseRFQConfig): UseRFQReturn {
   const grpcClient = usePromiseClient(RFQ);
@@ -97,19 +100,27 @@ export function useRFQ({
     });
   }, [address, chainId, quoteRequest]);
 
-  const { data, responses, openStream, restartStream, abortStream, error } =
-    useStream<typeof RFQ, ParsedQuoteResponse>({
-      queryClient,
-      queryKey: ['useRFQ'],
-      grpcClient,
-      method: 'webTaker',
-      request,
-      enabled: enabled && request !== undefined,
-      keepAlive: true,
-      timeoutMs,
-      parseResponse: parseQuoteResponse,
-      onError,
-    });
+  const {
+    data,
+    responses,
+    openStream,
+    restartStream,
+    abortStream,
+    error,
+    isStreaming,
+  } = useStream<typeof RFQ, ParsedQuoteResponse>({
+    queryClient,
+    queryKey: ['useRFQ'],
+    grpcClient,
+    method: 'webTaker',
+    request,
+    enabled: enabled && request !== undefined,
+    keepAlive: true,
+    timeoutMs,
+    parseResponse: parseQuoteResponse,
+    onResponse,
+    onError,
+  });
 
   return {
     quotes: data,
@@ -118,5 +129,6 @@ export function useRFQ({
     restartStream,
     abortStream,
     error,
+    isStreaming,
   };
 }

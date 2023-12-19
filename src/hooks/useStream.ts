@@ -66,6 +66,8 @@ interface UseStreamReturn<TService extends ServiceType, TParsedResponse> {
   abortStream: AbortStreamFn;
   // Function to reset and restart the gRPC stream.
   restartStream: () => void;
+  // Flag to indicate whether the stream is currently open.
+  isStreaming: boolean;
 }
 
 /**
@@ -101,6 +103,7 @@ export const useStream = <TService extends ServiceType, TParsedResponse>({
 
   // State variables to hold the responses and error from the gRPC stream.
   const [responses, setResponses] = useState<TParsedResponse[]>([]);
+  const [isStreaming, setIsStreaming] = useState<boolean>(false);
   const [error, setError] = useState<ConnectError | Error>();
 
   /**
@@ -140,6 +143,7 @@ export const useStream = <TService extends ServiceType, TParsedResponse>({
 
     logger.debug(`Starting stream #${streamIdRef.current}`);
     try {
+      setIsStreaming(true);
       while (enabled) {
         // @ts-expect-error never is not callable
         for await (const res of grpcClient[method](request, {
@@ -183,6 +187,7 @@ export const useStream = <TService extends ServiceType, TParsedResponse>({
     // Cleanup function to close the stream when the component is unmounted.
     return () => {
       logger.log('Closing stream in cleanup...');
+      setIsStreaming(false);
       resetStream();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps -- purposefully not exhaustive
@@ -269,5 +274,6 @@ export const useStream = <TService extends ServiceType, TParsedResponse>({
     openStream,
     abortStream,
     restartStream,
+    isStreaming,
   };
 };
