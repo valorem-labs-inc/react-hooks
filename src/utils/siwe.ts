@@ -50,6 +50,8 @@ export const getSIWEConfig = ({
     enabled: true,
     // Specify the nonce refetch interval. Set to 0 to prevent creating new sessions.
     nonceRefetchInterval: 0,
+    // Determines the session refetch interval.
+    sessionRefetchInterval: 60 * 1000 * 2, // 2 minutes
     // Determines whether to sign out on account change.
     signOutOnAccountChange: true,
     // Determines whether to sign out on disconnect.
