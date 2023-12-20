@@ -1,9 +1,7 @@
 import { useMemo } from 'react';
 import type { Address } from 'viem';
-import { useQueryClient } from '@tanstack/react-query';
+import type { UseQueryResult } from '@tanstack/react-query';
 import { useChainId } from 'wagmi';
-import type {
-  SpotPriceResponse} from '@valorem-labs-inc/sdk';
 import {
   Spot,
   SpotPriceInfo,
@@ -12,8 +10,9 @@ import {
   fromH256,
   toH160,
 } from '@valorem-labs-inc/sdk';
+import { createQueryService } from '@connectrpc/connect-query';
+import type { ConnectError } from '@connectrpc/connect';
 import { useStream } from './useStream';
-import { usePromiseClient } from './usePromiseClient';
 
 /**
  * Represents a token with its address, symbol, and optional decimals and chain ID.
@@ -53,7 +52,12 @@ type InferSymbols<TTokens extends TokensArr> = TTokens extends undefined
  * The return type of the useSpotPrice hook.
  * spotPrices - An object mapping each token symbol to its spot price.
  */
-export interface UseSpotPriceReturn<TTokens extends TokensArr> {
+export interface UseSpotPriceReturn<TTokens extends TokensArr>
+  extends Omit<
+    UseQueryResult<Record<string, Price | undefined>, ConnectError>,
+    'data'
+  > {
+  isStreaming: boolean;
   spotPrices?: Record<InferSymbols<TTokens>, Price | undefined>;
 }
 
@@ -68,8 +72,6 @@ export function useSpotPrice<TTokens extends TokensArr>({
   spotPriceRequest,
   enabled,
 }: UseSpotPriceConfig<TTokens>): UseSpotPriceReturn<TTokens> {
-  const grpcClient = usePromiseClient(Spot);
-  const queryClient = useQueryClient();
   const chainId = useChainId();
 
   const addressToSymbolMap = useMemo(
@@ -99,24 +101,25 @@ export function useSpotPrice<TTokens extends TokensArr>({
     return new SpotPriceRequest({ spotPriceInfo });
   }, [chainId, spotPriceRequest]);
 
-  const { data: spotPriceResponses } = useStream<
-    typeof Spot,
-    SpotPriceResponse
-  >({
-    queryClient,
-    queryKey: ['useSpotPrice'],
-    grpcClient,
-    method: 'getSpotPrice',
+  const service = createQueryService({ service: Spot });
+  const { data, isStreaming, ...rest } = useStream(
+    {
+      ...Spot.methods.getSpotPrice,
+      service: {
+        ...service,
+        typeName: Spot.typeName,
+      },
+    },
     request,
-    enabled,
-    keepAlive: true,
-    timeoutMs: 15000,
-  });
+    {
+      enabled,
+    },
+  );
 
   const spotPrices = useMemo(() => {
-    if (spotPriceResponses === undefined) return undefined;
+    if (data?.responses === undefined) return undefined;
     const prices: Record<string, Price | undefined> = {};
-    const latestResponse = spotPriceResponses[0];
+    const latestResponse = data.responses[0];
 
     latestResponse.spotPriceInfo.forEach((info) => {
       const { tokenAddress, spotPrice } = info;
@@ -135,7 +138,17 @@ export function useSpotPrice<TTokens extends TokensArr>({
     });
 
     return prices;
-  }, [addressToSymbolMap, spotPriceResponses]);
+  }, [addressToSymbolMap, data?.responses]);
 
-  return { spotPrices };
+  return {
+    spotPrices,
+    isStreaming,
+    ...(rest as Omit<
+      UseQueryResult<
+        Record<InferSymbols<TTokens>, Price | undefined>,
+        ConnectError
+      >,
+      'data'
+    >),
+  };
 }

@@ -12,12 +12,13 @@ import {
   toH160,
   toH256,
 } from '@valorem-labs-inc/sdk';
-import { useQueryClient } from '@tanstack/react-query';
-import { useMemo } from 'react';
+import type { UseQueryResult } from '@tanstack/react-query';
+import { useEffect, useMemo } from 'react';
 import { useAccount, useChainId } from 'wagmi';
 import { hexToBigInt } from 'viem';
+import { createQueryService } from '@connectrpc/connect-query';
+import type { ConnectError } from '@connectrpc/connect';
 import { useStream } from './useStream';
-import { usePromiseClient } from './usePromiseClient';
 
 /**
  * Configuration for the useSoftQuote hook.
@@ -38,28 +39,23 @@ export interface UseSoftQuoteConfig {
     | undefined;
   enabled?: boolean;
   timeoutMs?: number;
-  onResponse?: (response: ParsedSoftQuoteResponse) => void;
+  onResponse?: () => void;
   onError?: (err: Error) => void;
 }
 
 /**
  * Return type of the useSoftQuote hook.
  * quotes - Array of parsed quote responses.
- * responses - Array of raw quote responses.
- * openStream - Function to open the stream for receiving quotes.
- * restartStream - Function to reset and restart the quote stream.
- * abortStream - Function to abort the quote stream.
- * error - Error object if an error occurred during the RFQ process.
+ * isStreaming - Flag to indicate if the quote stream is open.
+ * ...rest - Any other properties returned by the useQuery hook.
  */
-export interface UseSoftQuoteReturn {
-  quotes?: ParsedSoftQuoteResponse[];
-  responses?: ParsedSoftQuoteResponse[];
-  openStream: () => Promise<() => void>;
-  restartStream: () => void;
-  abortStream: () => void;
-  error?: Error;
+export type UseSoftQuoteReturn = Omit<
+  UseQueryResult<ParsedSoftQuoteResponse, ConnectError>,
+  'data'
+> & {
+  softQuotes?: ParsedSoftQuoteResponse[];
   isStreaming: boolean;
-}
+};
 
 /**
  * Hook to manage the useSoftQuote process in the Valorem trading environment.
@@ -74,8 +70,6 @@ export const useSoftQuote = ({
   onResponse,
   onError,
 }: UseSoftQuoteConfig): UseSoftQuoteReturn => {
-  const grpcClient = usePromiseClient(SoftQuote);
-  const queryClient = useQueryClient();
   const { address } = useAccount();
   const chainId = useChainId();
 
@@ -103,35 +97,45 @@ export const useSoftQuote = ({
     });
   }, [address, chainId, quoteRequest]);
 
-  const {
-    data,
-    responses,
-    openStream,
-    restartStream,
-    abortStream,
-    error,
-    isStreaming,
-  } = useStream<typeof SoftQuote, ParsedSoftQuoteResponse>({
-    queryClient,
-    queryKey: ['useSoftQuote'],
-    grpcClient,
-    method: 'webTaker',
+  const service = createQueryService({ service: SoftQuote });
+  const { data, isStreaming, ...rest } = useStream(
+    {
+      ...SoftQuote.methods.webTaker,
+      service: {
+        ...service,
+        typeName: SoftQuote.typeName,
+      },
+    },
     request,
-    enabled: enabled && request !== undefined,
-    keepAlive: true,
-    timeoutMs,
-    parseResponse: parseSoftQuoteResponse,
-    onResponse,
-    onError,
-  });
+    {
+      enabled,
+      timeoutMs,
+      onResponse,
+    },
+  );
+
+  const softQuotes = useMemo(() => {
+    const parsed = data?.responses.map((raw) => {
+      try {
+        return parseSoftQuoteResponse(raw);
+      } catch (error) {
+        return undefined;
+      }
+    });
+    return parsed?.filter((quote) => quote) as ParsedSoftQuoteResponse[];
+  }, [data]);
+
+  useEffect(() => {
+    if (rest.error) onError?.(rest.error);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only run on error
+  }, [rest.error]);
 
   return {
-    quotes: data,
-    responses,
-    openStream,
-    restartStream,
-    abortStream,
-    error,
+    softQuotes,
     isStreaming,
+    ...(rest as Omit<
+      UseQueryResult<ParsedSoftQuoteResponse, ConnectError>,
+      'data'
+    >),
   };
 };
