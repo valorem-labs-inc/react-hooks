@@ -24,6 +24,7 @@ import { usePromiseClient } from './usePromiseClient';
  * quoteRequest - An object or instance containing the details for requesting a quote.
  * enabled - Flag to enable the hook.
  * timeoutMs - Timeout for the quote request in milliseconds.
+ * onResponse - Callback function for handling responses.
  * onError - Callback function for handling errors.
  */
 export interface UseSoftQuoteConfig {
@@ -37,6 +38,7 @@ export interface UseSoftQuoteConfig {
     | undefined;
   enabled?: boolean;
   timeoutMs?: number;
+  onResponse?: (response: ParsedSoftQuoteResponse) => void;
   onError?: (err: Error) => void;
 }
 
@@ -56,6 +58,7 @@ export interface UseSoftQuoteReturn {
   restartStream: () => void;
   abortStream: () => void;
   error?: Error;
+  isStreaming: boolean;
 }
 
 /**
@@ -68,6 +71,7 @@ export const useSoftQuote = ({
   quoteRequest,
   enabled,
   timeoutMs = 15000,
+  onResponse,
   onError,
 }: UseSoftQuoteConfig): UseSoftQuoteReturn => {
   const grpcClient = usePromiseClient(SoftQuote);
@@ -99,19 +103,27 @@ export const useSoftQuote = ({
     });
   }, [address, chainId, quoteRequest]);
 
-  const { data, responses, openStream, restartStream, abortStream, error } =
-    useStream<typeof SoftQuote, ParsedSoftQuoteResponse>({
-      queryClient,
-      queryKey: ['useSoftQuote'],
-      grpcClient,
-      method: 'webTaker',
-      request,
-      enabled: enabled && request !== undefined,
-      keepAlive: true,
-      timeoutMs,
-      parseResponse: parseSoftQuoteResponse,
-      onError,
-    });
+  const {
+    data,
+    responses,
+    openStream,
+    restartStream,
+    abortStream,
+    error,
+    isStreaming,
+  } = useStream<typeof SoftQuote, ParsedSoftQuoteResponse>({
+    queryClient,
+    queryKey: ['useSoftQuote'],
+    grpcClient,
+    method: 'webTaker',
+    request,
+    enabled: enabled && request !== undefined,
+    keepAlive: true,
+    timeoutMs,
+    parseResponse: parseSoftQuoteResponse,
+    onResponse,
+    onError,
+  });
 
   return {
     quotes: data,
@@ -120,5 +132,6 @@ export const useSoftQuote = ({
     restartStream,
     abortStream,
     error,
+    isStreaming,
   };
 };

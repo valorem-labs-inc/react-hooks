@@ -21,6 +21,7 @@ import { usePromiseClient } from './usePromiseClient';
  * quoteRequest - An object or instance containing the details for requesting a quote.
  * enabled - Flag to enable the hook.
  * timeoutMs - Timeout for the quote request in milliseconds.
+ * onResponse - Callback function for handling responses.
  * onError - Callback function for handling errors.
  */
 export interface UseRFQConfig {

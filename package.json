@@ -65,7 +65,7 @@
     "@connectrpc/connect-query": "0.5.3",
     "@connectrpc/connect-web": "^1.2.0",
     "@tanstack/react-query": "^4.36.1",
-    "@valorem-labs-inc/sdk": "^0.0.10-alpha.2",
+    "@valorem-labs-inc/sdk": "^0.0.10-alpha.8",
     "@wagmi/core": "^1.4.12",
     "abitype": "0.8.7",
     "connectkit": "^1.5.3",

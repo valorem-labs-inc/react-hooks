@@ -27,8 +27,8 @@ dependencies:
     specifier: ^4.36.1
     version: 4.36.1(react-dom@18.2.0)(react@18.2.0)
   '@valorem-labs-inc/sdk':
-    specifier: ^0.0.10-alpha.2
-    version: 0.0.10-alpha.2(@bufbuild/protobuf@1.6.0)(@connectrpc/connect@1.2.0)(@wagmi/core@1.4.12)(typescript@5.3.3)(viem@1.19.15)
+    specifier: ^0.0.10-alpha.8
+    version: 0.0.10-alpha.8(@bufbuild/protobuf@1.6.0)(@connectrpc/connect@1.2.0)(@wagmi/core@1.4.12)(typescript@5.3.3)(viem@1.19.15)
   typescript:
     specifier: ^5.3.0
     version: 5.3.3
@@ -1629,7 +1629,6 @@ packages:
       graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
     dependencies:
       graphql: 16.8.1
-    dev: true
 
   /@humanwhocodes/config-array@0.11.13:
     resolution: {integrity: sha512-JSBDMiDKSzQVngfRjOdFXgFfklaXI4K9nLF49Auh21lmBWRLIK3+xTErTWD4KU54pb6coM6ESE7Awz/FNU3zgQ==}
@@ -3833,8 +3832,8 @@ packages:
     resolution: {integrity: sha512-zuVdFrMJiuCDQUMCzQaD6KL28MjnqqN8XnAqiEq9PNm/hCPTSGfrXCOfwj1ow4LFb/tNymJPwsNbVePc1xFqrQ==}
     dev: true
 
-  /@valorem-labs-inc/sdk@0.0.10-alpha.2(@bufbuild/protobuf@1.6.0)(@connectrpc/connect@1.2.0)(@wagmi/core@1.4.12)(typescript@5.3.3)(viem@1.19.15):
-    resolution: {integrity: sha512-TmO4nuncIq4c4xqbYR6VYlt8Euw4KsmRiecavZSZQRqSRHtmEFWyijAdzOp7W+17aQhwo23QBGfoKwef9TGW6Q==, tarball: https://npm.pkg.github.com/download/@valorem-labs-inc/sdk/0.0.10-alpha.2/23d544063293253ff26a162d90ea08370f86f06b}
+  /@valorem-labs-inc/sdk@0.0.10-alpha.8(@bufbuild/protobuf@1.6.0)(@connectrpc/connect@1.2.0)(@wagmi/core@1.4.12)(typescript@5.3.3)(viem@1.19.15):
+    resolution: {integrity: sha512-WtUyYjpXKp0QY6rnBGc4vvvjM2VudKakeF1al7pP55jg+bU8yJvF0/EsN0U73ARi9/Rr1ANyfhfH7som1DoAbA==, tarball: https://npm.pkg.github.com/download/@valorem-labs-inc/sdk/0.0.10-alpha.8/8dcfc991a33da989cf08bf9de655f8efbad3880e}
     engines: {node: '>=18'}
     peerDependencies:
       '@bufbuild/protobuf': ^1.6.0
@@ -3845,6 +3844,7 @@ packages:
     dependencies:
       '@bufbuild/protobuf': 1.6.0
       '@connectrpc/connect': 1.2.0(@bufbuild/protobuf@1.6.0)
+      '@graphql-typed-document-node/core': 3.2.0(graphql@16.8.1)
       '@wagmi/core': 1.4.12(@types/react@18.2.45)(react@18.2.0)(typescript@5.3.3)(viem@1.19.15)(zod@3.22.4)
       date-fns: 3.0.0
       graphql: 16.8.1

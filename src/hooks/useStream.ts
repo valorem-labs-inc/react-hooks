@@ -117,6 +117,7 @@ export const useStream = <TService extends ServiceType, TParsedResponse>({
     } else if (streamIdRef.current > 0) {
       logger.debug('Attempted to abort undefined stream.');
     }
+    setIsStreaming(false);
   }, [logger]);
 
   /**
@@ -137,14 +138,15 @@ export const useStream = <TService extends ServiceType, TParsedResponse>({
     // Abort any existing stream before opening a new one.
     abortStream();
 
-    // Create a new AbortController for the upcoming stream.
-    abortControllerRef.current = new AbortController();
-    streamIdRef.current += 1;
-
-    logger.debug(`Starting stream #${streamIdRef.current}`);
     try {
-      setIsStreaming(true);
       while (enabled) {
+        // Create a new AbortController for the upcoming stream.
+        abortControllerRef.current = new AbortController();
+        streamIdRef.current += 1;
+
+        logger.debug(`Starting stream #${streamIdRef.current}`);
+        setIsStreaming(true);
+
         // @ts-expect-error never is not callable
         for await (const res of grpcClient[method](request, {
           signal: abortControllerRef.current.signal,
@@ -165,9 +167,14 @@ export const useStream = <TService extends ServiceType, TParsedResponse>({
         }
 
         // If keepAlive is false, break out of the loop once the stream ends.
-        if (!keepAlive) break;
+        if (!keepAlive) {
+          setIsStreaming(false);
+          break;
+        }
       }
+      setIsStreaming(false);
     } catch (err) {
+      setIsStreaming(false);
       // Handle errors.
       if (err instanceof Error) {
         onError?.(err);
@@ -190,7 +197,7 @@ export const useStream = <TService extends ServiceType, TParsedResponse>({
       setIsStreaming(false);
       resetStream();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- purposefully not exhaustive
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- purposely not exhaustive
   }, [
     /* logger, parseResponse, timeoutMs */ grpcClient,
     keepAlive,
@@ -221,30 +228,31 @@ export const useStream = <TService extends ServiceType, TParsedResponse>({
     setTimeout(() => {
       void openStream();
     }, 250);
-  }, [clearQueryData, openStream, resetStream]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- purposely not exhaustive
+  }, [/* clearQueryData, */ openStream, resetStream]);
 
   /**
    * useEffect to handle the enabling and disabling of the stream based on the `enabled` prop.
    */
   useEffect(() => {
-    if (!enabled && abortControllerRef.current !== undefined) {
+    if (!enabled && isStreaming) {
       abortStream();
       return;
     }
-    if (enabled && abortControllerRef.current === undefined) {
+    if (enabled && !isStreaming) {
       void openStream();
     } else {
       logger.log('not opening/closing stream, but enabled just changed');
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- purposefully not exhaustive
-  }, [/* openStream,abortStream, logger, */ enabled]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- purposely not exhaustive
+  }, [/* openStream,abortStream, logger, isStreaming, */ enabled]);
 
   /**
    * useEffect to update the query data whenever the responses state changes.
    */
   useEffect(() => {
     queryClient.setQueryData(queryKey, responses);
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- purposefully not exhaustive
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- purposely not exhaustive
   }, [/* queryClient, queryKey, */ responses]);
 
   // Use react-query to update the global query state and handle refetching.
