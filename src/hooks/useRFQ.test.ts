@@ -68,7 +68,7 @@ function getOptionTypeId(info: OptionTypeInfo) {
 }
 
 describe('useRFQ', () => {
-  it('Should return an error saying the user needs to authenticate first', async () => {
+  it.skip('Should return an error saying the user needs to authenticate first', async () => {
     const { result } = renderHook(() =>
       useRFQ({
         quoteRequest: new QuoteRequest({

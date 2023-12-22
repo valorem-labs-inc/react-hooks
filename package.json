@@ -1,6 +1,6 @@
 {
   "name": "@valorem-labs-inc/react-hooks",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "repository": {
     "type": "git",
     "url": "https://github.com/valorem-labs-inc/react-hooks.git"
@@ -35,16 +35,17 @@
     "@tanstack/query-core": "^4.36.1",
     "@testing-library/react": "^14.1.2",
     "@testing-library/react-hooks": "^8.0.1",
-    "@types/node": "^20.10.4",
+    "@types/node": "^20.10.5",
     "@types/react": "^18.2.45",
-    "@types/react-dom": "^18.2.17",
+    "@types/react-dom": "^18.2.18",
     "@vercel/style-guide": "^5.1.0",
-    "@vitest/coverage-v8": "^1.0.4",
+    "@vitest/coverage-v8": "^1.1.0",
     "@wagmi/cli": "^1.5.2",
     "@wagmi/core": "^1.4.12",
     "abitype": "0.8.7",
     "connectkit": "^1.5.3",
-    "eslint": "^8.55.0",
+    "eslint": "^8.56.0",
+    "eslint-config-canonical": "^42.8.0",
     "happy-dom": "^12.10.3",
     "jest-environment-jsdom": "^29.7.0",
     "jsdom": "^23.0.1",
@@ -55,7 +56,7 @@
     "siwe": "^2.1.4",
     "typedoc": "^0.25.4",
     "typedoc-plugin-missing-exports": "^2.1.0",
-    "vitest": "^1.0.4"
+    "vitest": "^1.1.0"
   },
   "peerDependencies": {
     "@bufbuild/buf": "^1.28.1",
@@ -64,7 +65,7 @@
     "@connectrpc/connect-query": "0.5.3",
     "@connectrpc/connect-web": "^1.2.0",
     "@tanstack/react-query": "^4.36.1",
-    "@valorem-labs-inc/sdk": "^0.0.9",
+    "@valorem-labs-inc/sdk": "^0.0.10",
     "@wagmi/core": "^1.4.12",
     "abitype": "0.8.7",
     "connectkit": "^1.5.3",
@@ -72,7 +73,7 @@
     "react-dom": "17.x || 18.x",
     "siwe": "^2.1.4",
     "typescript": "^5.3.0",
-    "viem": "^1.19.15",
+    "viem": "^1.20.3",
     "wagmi": "^1.4.12",
     "zod": "^3.22.4"
   },
@@ -87,7 +88,8 @@
   },
   "pnpm": {
     "overrides": {
-      "@wagmi/core": "^1.4.12"
+      "@wagmi/core": "^1.4.12",
+      "viem": "^1.20.3"
     }
   }
 }

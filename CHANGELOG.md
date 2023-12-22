@@ -1,5 +1,12 @@
 # @valorem-labs-inc/react-hooks
 
+## 0.0.7
+
+### Patch Changes
+
+- refactor useStream to make better use of react-query
+- decrease SIWE session refetch interval
+
 ## 0.0.6
 
 ### Patch Changes

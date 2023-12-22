@@ -9,18 +9,20 @@ import {
   toH160,
   toH256,
 } from '@valorem-labs-inc/sdk';
-import { useQueryClient } from '@tanstack/react-query';
-import { useMemo } from 'react';
+import type { UseQueryResult } from '@tanstack/react-query';
+import { useEffect, useMemo } from 'react';
 import { useAccount, useChainId } from 'wagmi';
 import { hexToBigInt } from 'viem';
+import type { ConnectError } from '@connectrpc/connect';
+import { createQueryService } from '@connectrpc/connect-query';
 import { useStream } from './useStream';
-import { usePromiseClient } from './usePromiseClient';
 
 /**
  * Configuration for the useRFQ hook.
  * quoteRequest - An object or instance containing the details for requesting a quote.
  * enabled - Flag to enable the hook.
  * timeoutMs - Timeout for the quote request in milliseconds.
+ * onResponse - Callback function for handling responses.
  * onError - Callback function for handling errors.
  */
 export interface UseRFQConfig {
@@ -34,27 +36,23 @@ export interface UseRFQConfig {
     | undefined;
   enabled?: boolean;
   timeoutMs?: number;
+  onResponse?: () => void;
   onError?: (err: Error) => void;
 }
 
 /**
  * Return type of the useRFQ hook.
  * quotes - Array of parsed quote responses.
- * responses - Array of raw quote responses.
- * openStream - Function to open the stream for receiving quotes.
- * resetAndRestartStream - Function to reset and restart the quote stream.
- * abortStream - Function to abort the quote stream.
- * error - Error object if an error occurred during the RFQ process.
+ * isStreaming - Flag to indicate if the quote stream is open.
+ * ...rest - Any other properties returned by the useQuery hook.
  */
-export interface UseRFQReturn {
+export type UseRFQReturn = Omit<
+  UseQueryResult<ParsedQuoteResponse, ConnectError>,
+  'data'
+> & {
   quotes?: ParsedQuoteResponse[];
-  // TODO(What is the difference between quotes and responses?)
-  responses?: ParsedQuoteResponse[];
-  openStream: () => Promise<() => void>;
-  resetAndRestartStream: () => void;
-  abortStream: () => void;
-  error?: Error;
-}
+  isStreaming: boolean;
+};
 
 /**
  * Hook to manage the Request for Quote (RFQ) process in the Valorem trading environment.
@@ -66,10 +64,9 @@ export function useRFQ({
   quoteRequest,
   enabled,
   timeoutMs = 15000,
+  onResponse,
   onError,
 }: UseRFQConfig): UseRFQReturn {
-  const grpcClient = usePromiseClient(RFQ);
-  const queryClient = useQueryClient();
   const { address } = useAccount();
   const chainId = useChainId();
 
@@ -97,32 +94,45 @@ export function useRFQ({
     });
   }, [address, chainId, quoteRequest]);
 
-  const {
-    data,
-    responses,
-    openStream,
-    resetAndRestartStream,
-    abortStream,
-    error,
-  } = useStream<typeof RFQ, ParsedQuoteResponse>({
-    queryClient,
-    queryKey: ['useRFQ'],
-    grpcClient,
-    method: 'webTaker',
+  const service = createQueryService({ service: RFQ });
+  const { data, isStreaming, ...rest } = useStream(
+    {
+      ...RFQ.methods.webTaker,
+      service: {
+        ...service,
+        typeName: RFQ.typeName,
+      },
+    },
     request,
-    enabled: enabled && request !== undefined,
-    keepAlive: true,
-    timeoutMs,
-    parseResponse: parseQuoteResponse,
-    onError,
-  });
+    {
+      enabled,
+      onResponse,
+      timeoutMs,
+    },
+  );
+
+  const quotes = useMemo(() => {
+    const parsed = data?.responses.map((raw) => {
+      try {
+        return parseQuoteResponse(raw);
+      } catch (error) {
+        return undefined;
+      }
+    });
+    return parsed?.filter((quote) => quote) as ParsedQuoteResponse[];
+  }, [data]);
+
+  useEffect(() => {
+    if (rest.error) onError?.(rest.error);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only run on error
+  }, [rest.error]);
 
   return {
-    quotes: data,
-    responses,
-    openStream,
-    resetAndRestartStream,
-    abortStream,
-    error,
+    quotes,
+    isStreaming,
+    ...(rest as Omit<
+      UseQueryResult<ParsedQuoteResponse, ConnectError>,
+      'data'
+    >),
   };
 }
