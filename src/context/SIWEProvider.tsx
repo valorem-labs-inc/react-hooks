@@ -31,8 +31,6 @@ const siweQueryProps = {
   refetchOnMount: false,
   refetchOnReconnect: false,
   keepPreviousData: false,
-  cacheTime: 0,
-  staleTime: 1,
 };
 
 /**
