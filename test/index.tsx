@@ -7,6 +7,7 @@ import { WagmiProvider } from './WagmiProvider';
 import { FC, PropsWithChildren } from 'react';
 import { ValoremProvider } from '../src/context';
 import { LogLevel } from '../src/context/Logger';
+import { SupportedAsset } from '@valorem-labs-inc/sdk';
 
 /**
  * A wrapper component that encapsulates the ValoremProvider within the WagmiProvider.
@@ -59,6 +60,12 @@ export function renderHook<TResult, TProps>(
 // Re-export act and cleanup from the testing library for convenience.
 export { act, cleanup } from '@testing-library/react';
 
-// Addresses for mock USDC and WETH on Arbitrum Goerli used for testing purposes.
-export const USDC_ADDRESS = '0x8AE0EeedD35DbEFe460Df12A20823eFDe9e03458';
-export const WETH_ADDRESS = '0x618b9a2Db0CF23Bb20A849dAa2963c72770C1372';
+// Addresses for mock USDC and WETH on Arbitrum Sepolia used for testing purposes.
+export const USDC_ADDRESS = SupportedAsset.fromSymbolAndChainId(
+  'USDC',
+  421614,
+).address;
+export const WETH_ADDRESS = SupportedAsset.fromSymbolAndChainId(
+  'WETH',
+  421614,
+).address;

@@ -28,8 +28,8 @@ dependencies:
     specifier: ^4.36.1
     version: 4.36.1(react-dom@18.2.0)(react@18.2.0)
   '@valorem-labs-inc/sdk':
-    specifier: ^0.0.11-alpha.2
-    version: 0.0.11-alpha.2(@bufbuild/protobuf@1.6.0)(@connectrpc/connect@1.2.0)(@wagmi/core@1.4.12)(typescript@5.3.3)(viem@1.21.1)
+    specifier: ^0.0.11-alpha.3
+    version: 0.0.11-alpha.3(@bufbuild/protobuf@1.6.0)(@connectrpc/connect@1.2.0)(@wagmi/core@1.4.12)(typescript@5.3.3)(viem@1.21.1)
   typescript:
     specifier: ^5.3.0
     version: 5.3.3
@@ -3718,8 +3718,8 @@ packages:
     resolution: {integrity: sha512-zuVdFrMJiuCDQUMCzQaD6KL28MjnqqN8XnAqiEq9PNm/hCPTSGfrXCOfwj1ow4LFb/tNymJPwsNbVePc1xFqrQ==}
     dev: true
 
-  /@valorem-labs-inc/sdk@0.0.11-alpha.2(@bufbuild/protobuf@1.6.0)(@connectrpc/connect@1.2.0)(@wagmi/core@1.4.12)(typescript@5.3.3)(viem@1.21.1):
-    resolution: {integrity: sha512-kJuejVLzEc6USV3jvW86zyywL/Znkyxy72jhXDo7m9EgbBHgfLBQhVBn+zNZDoUckS5g+QQf70y338bHjSTx3Q==, tarball: https://npm.pkg.github.com/download/@valorem-labs-inc/sdk/0.0.11-alpha.2/9697ebc782455bea525a541fb8861f61cb4275cf}
+  /@valorem-labs-inc/sdk@0.0.11-alpha.3(@bufbuild/protobuf@1.6.0)(@connectrpc/connect@1.2.0)(@wagmi/core@1.4.12)(typescript@5.3.3)(viem@1.21.1):
+    resolution: {integrity: sha512-pCxxa45mgsRNNgFS6IcClyJJ9k6NyEEvJhM6Iw/+ymvi+3pEMb+ktBUKTWVtCq+aM1D2qUWIwkVjpstE0H9OPQ==, tarball: https://npm.pkg.github.com/download/@valorem-labs-inc/sdk/0.0.11-alpha.3/a91bb37999d36c5f66714b13a255680724c99436}
     engines: {node: '>=18'}
     peerDependencies:
       '@bufbuild/protobuf': ^1.6.0
@@ -3727,9 +3727,6 @@ packages:
       '@wagmi/core': ^1.4.12
       typescript: ^5.3.0
       viem: ^1.21.1
-    peerDependenciesMeta:
-      typescript:
-        optional: true
     dependencies:
       '@bufbuild/protobuf': 1.6.0
       '@connectrpc/connect': 1.2.0(@bufbuild/protobuf@1.6.0)
