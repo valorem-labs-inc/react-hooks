@@ -36,7 +36,7 @@
     "@testing-library/react": "^14.1.2",
     "@testing-library/react-hooks": "^8.0.1",
     "@types/node": "^20.10.5",
-    "@types/react": "^18.2.45",
+    "@types/react": "^18.2.46",
     "@types/react-dom": "^18.2.18",
     "@vercel/style-guide": "^5.1.0",
     "@vitest/coverage-v8": "^1.1.0",
@@ -65,7 +65,7 @@
     "@connectrpc/connect-query": "0.5.3",
     "@connectrpc/connect-web": "^1.2.0",
     "@tanstack/react-query": "^4.36.1",
-    "@valorem-labs-inc/sdk": "^0.0.10",
+    "@valorem-labs-inc/sdk": "^0.0.11-alpha.3",
     "@wagmi/core": "^1.4.12",
     "abitype": "0.8.7",
     "connectkit": "^1.5.3",
@@ -73,7 +73,7 @@
     "react-dom": "17.x || 18.x",
     "siwe": "^2.1.4",
     "typescript": "^5.3.0",
-    "viem": "^1.20.3",
+    "viem": "^1.21.1",
     "wagmi": "^1.4.12",
     "zod": "^3.22.4"
   },
@@ -89,7 +89,7 @@
   "pnpm": {
     "overrides": {
       "@wagmi/core": "^1.4.12",
-      "viem": "^1.20.3"
+      "viem": "^1.21.1"
     }
   }
 }
