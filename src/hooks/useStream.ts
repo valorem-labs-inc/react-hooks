@@ -142,6 +142,14 @@ export const useStream = <
     ...queryOptions,
     queryKey,
     queryFn: async () => {
+      if (queryOptions.enabled === false) {
+        // If the query is disabled, early return empty response
+        return {
+          done: true,
+          responses: [],
+        };
+      }
+
       let responses: O[] = [];
       const streamId = streamIdRef.current;
       streamIdRef.current += 1;

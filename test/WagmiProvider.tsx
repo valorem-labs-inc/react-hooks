@@ -1,7 +1,7 @@
 import type { PropsWithChildren } from 'react';
 import { WagmiConfig, createConfig, configureChains } from 'wagmi';
 import { publicProvider } from 'wagmi/providers/public';
-import { arbitrumGoerli } from 'viem/chains';
+import { arbitrumSepolia } from 'viem/chains';
 import { createWalletClient, http } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 import { MockConnector } from 'wagmi/connectors/mock';
@@ -11,7 +11,7 @@ import { MockConnector } from 'wagmi/connectors/mock';
  * Uses the publicProvider as the default provider for transactions.
  */
 const { publicClient, webSocketPublicClient } = configureChains(
-  [arbitrumGoerli],
+  [arbitrumSepolia],
   [publicProvider()],
 );
 
@@ -27,10 +27,10 @@ const PRIVATE_KEY =
  * It creates a wallet client with a given private key and associated chain.
  */
 const mockConnector = new MockConnector({
-  chains: [arbitrumGoerli],
+  chains: [arbitrumSepolia],
   options: {
     walletClient: createWalletClient({
-      chain: arbitrumGoerli,
+      chain: arbitrumSepolia,
       account: privateKeyToAccount(PRIVATE_KEY),
       transport: http(),
     }),

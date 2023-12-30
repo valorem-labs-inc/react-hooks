@@ -73,7 +73,7 @@ describe('useRFQ', () => {
       useRFQ({
         quoteRequest: new QuoteRequest({
           ulid: undefined,
-          chainId: toH256(BigInt(421613)),
+          chainId: toH256(BigInt(421614)),
           seaportAddress: toH160(hexToBigInt(SEAPORT_ADDRESS)),
           takerAddress: toH160(
             hexToBigInt('0xb5CF0aC8935Ac3f238B972e465c98BA7E23Dd346'),
