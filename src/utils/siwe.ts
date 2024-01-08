@@ -1,6 +1,6 @@
 import type { Auth, H160, NonceText, SiweSession } from '@valorem-labs-inc/sdk';
 import {
-  createSIWEMessage,
+  createSIWEMessage as sdkCreateSIWEMessage,
   fromH160ToAddress,
   fromH256,
 } from '@valorem-labs-inc/sdk';
@@ -9,6 +9,23 @@ import type { PromiseClient } from '@connectrpc/connect';
 import type { QueryClient } from '@tanstack/query-core';
 import type { UseQueryResult } from '@tanstack/react-query';
 import type { useLogger } from '../context/Logger';
+
+const createSIWEMessage: SIWEConfig['createMessage'] = ({
+  chainId,
+  address,
+  nonce,
+}) => {
+  const message = sdkCreateSIWEMessage({
+    chainId,
+    address: address as `0x${string}`,
+    nonce,
+  });
+  if (typeof window === 'undefined') {
+    return message;
+  }
+  const domain = window.location.host;
+  return message.replace('trade.valorem.xyz wants', `${domain} wants`);
+};
 
 /**
  * Defines the structure for SIWE configuration properties.
@@ -56,7 +73,7 @@ export const getSIWEConfig = ({
     // Determines whether to sign out on network change.
     signOutOnNetworkChange: false,
     // Provide a message creation function for the SIWE message.
-    createMessage: createSIWEMessage as SIWEConfig['createMessage'],
+    createMessage: createSIWEMessage,
 
     // Returns a promise which, upon resolution, returns the nonce.
     async getNonce() {
