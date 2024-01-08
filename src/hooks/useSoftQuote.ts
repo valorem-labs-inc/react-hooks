@@ -1,6 +1,7 @@
 import type {
   OptionType,
   ParsedSoftQuoteResponse,
+  SoftQuoteResponse,
 } from '@valorem-labs-inc/sdk';
 import {
   CLEAR_ADDRESS,
@@ -39,7 +40,7 @@ export interface UseSoftQuoteConfig {
     | undefined;
   enabled?: boolean;
   timeoutMs?: number;
-  onResponse?: () => void;
+  onResponse?: (res: SoftQuoteResponse) => void;
   onError?: (err: Error) => void;
 }
 

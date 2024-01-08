@@ -1,4 +1,8 @@
-import type { OptionType, ParsedQuoteResponse } from '@valorem-labs-inc/sdk';
+import type {
+  OptionType,
+  ParsedQuoteResponse,
+  QuoteResponse,
+} from '@valorem-labs-inc/sdk';
 import {
   CLEAR_ADDRESS,
   ItemType,
@@ -36,7 +40,7 @@ export interface UseRFQConfig {
     | undefined;
   enabled?: boolean;
   timeoutMs?: number;
-  onResponse?: () => void;
+  onResponse?: (res: QuoteResponse) => void;
   onError?: (err: Error) => void;
 }
 
