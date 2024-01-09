@@ -7,11 +7,36 @@
   },
   "license": "MIT",
   "type": "module",
-  "main": "dist/main.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.mjs"
+    },
+    "./context": {
+      "types": "./dist/context/index.d.ts",
+      "default": "./dist/context/index.mjs"
+    },
+    "./hooks": {
+      "types": "./dist/hooks/index.d.ts",
+      "default": "./dist/hooks/index.mjs"
+    },
+    "./lib": {
+      "types": "./dist/lib/index.d.ts",
+      "default": "./dist/lib/index.mjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "main": "dist/index.mjs",
   "source": "src/index.ts",
-  "types": "dist/types.d.ts",
+  "types": "dist/index.d.ts",
+  "files": [
+    "/context",
+    "/hooks",
+    "/lib",
+    "/dist"
+  ],
   "scripts": {
-    "build": "pnpm clean && pnpm generate && pnpm parcel build --no-cache",
+    "build": "pnpm clean && pnpm generate && pnpm tsup",
     "ci:release": "pnpm build && pnpm changeset publish",
     "clean": "rm -rf ./dist",
     "codegen": "rm -rf ./src/lib/codegen && wagmi generate && npx buf generate",
@@ -30,8 +55,6 @@
     "@bufbuild/protoc-gen-es": "^1.6.0",
     "@changesets/cli": "^2.27.1",
     "@connectrpc/protoc-gen-connect-query": "0.5.3",
-    "@parcel/packager-ts": "^2.10.3",
-    "@parcel/transformer-typescript-types": "^2.10.3",
     "@tanstack/query-core": "^4.36.1",
     "@testing-library/react": "^14.1.2",
     "@testing-library/react-hooks": "^8.0.1",
@@ -49,11 +72,11 @@
     "happy-dom": "^12.10.3",
     "jest-environment-jsdom": "^29.7.0",
     "jsdom": "^23.0.1",
-    "parcel": "^2.10.3",
     "prettier": "^3.1.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "siwe": "^2.1.4",
+    "tsup": "^8.0.1",
     "typedoc": "^0.25.4",
     "typedoc-plugin-missing-exports": "^2.1.0",
     "vitest": "^1.1.0"
@@ -65,7 +88,7 @@
     "@connectrpc/connect-query": "0.5.3",
     "@connectrpc/connect-web": "^1.2.0",
     "@tanstack/react-query": "^4.36.1",
-    "@valorem-labs-inc/sdk": "^0.0.11-alpha.3",
+    "@valorem-labs-inc/sdk": "^0.0.11-alpha.6",
     "@wagmi/core": "^1.4.12",
     "abitype": "0.8.7",
     "connectkit": "^1.5.3",
