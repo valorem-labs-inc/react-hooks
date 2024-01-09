@@ -71,7 +71,7 @@ export const getSIWEConfig = ({
     // Determines whether to sign out on disconnect.
     signOutOnDisconnect: true,
     // Determines whether to sign out on network change.
-    signOutOnNetworkChange: false,
+    signOutOnNetworkChange: true,
     // Provide a message creation function for the SIWE message.
     createMessage: createSIWEMessage,
 
