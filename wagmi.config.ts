@@ -20,7 +20,7 @@ export default defineConfig({
       address: {
         1: CLEAR_ADDRESS,
         42161: CLEAR_ADDRESS,
-        421613: CLEAR_ADDRESS,
+        421614: CLEAR_ADDRESS,
         31337: FOUNDRY_CLEAR_ADDRESS,
       },
       abi: CLEAR_ABI,
