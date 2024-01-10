@@ -55,7 +55,6 @@ export type UseRFQReturn = Omit<
   'data'
 > & {
   quotes?: ParsedQuoteResponse[];
-  isStreaming: boolean;
 };
 
 /**
@@ -99,7 +98,7 @@ export function useRFQ({
   }, [address, chainId, quoteRequest]);
 
   const service = createQueryService({ service: RFQ });
-  const { data, isStreaming, ...rest } = useStream(
+  const { data, ...rest } = useStream(
     {
       ...RFQ.methods.webTaker,
       service: {
@@ -112,6 +111,9 @@ export function useRFQ({
       enabled,
       onResponse,
       timeoutMs,
+      retry: false,
+      refetchInterval: false,
+      refetchOnWindowFocus: false,
     },
   );
 
@@ -133,7 +135,6 @@ export function useRFQ({
 
   return {
     quotes,
-    isStreaming,
     ...(rest as Omit<
       UseQueryResult<ParsedQuoteResponse, ConnectError>,
       'data'

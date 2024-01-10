@@ -57,7 +57,6 @@ export interface UseSpotPriceReturn<TTokens extends TokensArr>
     UseQueryResult<Record<string, Price | undefined>, ConnectError>,
     'data'
   > {
-  isStreaming: boolean;
   spotPrices?: Record<InferSymbols<TTokens>, Price | undefined>;
 }
 
@@ -102,7 +101,7 @@ export function useSpotPrice<TTokens extends TokensArr>({
   }, [chainId, spotPriceRequest]);
 
   const service = createQueryService({ service: Spot });
-  const { data, isStreaming, ...rest } = useStream(
+  const { data, ...rest } = useStream(
     {
       ...Spot.methods.getSpotPrice,
       service: {
@@ -142,7 +141,6 @@ export function useSpotPrice<TTokens extends TokensArr>({
 
   return {
     spotPrices,
-    isStreaming,
     ...(rest as Omit<
       UseQueryResult<
         Record<InferSymbols<TTokens>, Price | undefined>,

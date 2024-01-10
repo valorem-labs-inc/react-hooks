@@ -55,7 +55,6 @@ export type UseSoftQuoteReturn = Omit<
   'data'
 > & {
   softQuotes?: ParsedSoftQuoteResponse[];
-  isStreaming: boolean;
 };
 
 /**
@@ -99,7 +98,7 @@ export const useSoftQuote = ({
   }, [address, chainId, quoteRequest]);
 
   const service = createQueryService({ service: SoftQuote });
-  const { data, isStreaming, ...rest } = useStream(
+  const { data, ...rest } = useStream(
     {
       ...SoftQuote.methods.webTaker,
       service: {
@@ -112,6 +111,9 @@ export const useSoftQuote = ({
       enabled,
       timeoutMs,
       onResponse,
+      retry: false,
+      refetchInterval: false,
+      refetchOnWindowFocus: false,
     },
   );
 
@@ -133,7 +135,6 @@ export const useSoftQuote = ({
 
   return {
     softQuotes,
-    isStreaming,
     ...(rest as Omit<
       UseQueryResult<ParsedSoftQuoteResponse, ConnectError>,
       'data'
