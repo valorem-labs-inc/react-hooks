@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import type { Address } from 'viem';
 import type { UseQueryResult } from '@tanstack/react-query';
 import { useChainId } from 'wagmi';
@@ -100,8 +100,15 @@ export function useSpotPrice<TTokens extends TokensArr>({
     return new SpotPriceRequest({ spotPriceInfo });
   }, [chainId, spotPriceRequest]);
 
+  const [spotPrices, setSpotPrices] = useState<
+    Record<string, Price | undefined>
+  >({
+    WETH: undefined,
+    USDC: undefined,
+  });
+
   const service = createQueryService({ service: Spot });
-  const { data, ...rest } = useStream(
+  const { data: _data, ...rest } = useStream(
     {
       ...Spot.methods.getSpotPrice,
       service: {
@@ -112,32 +119,23 @@ export function useSpotPrice<TTokens extends TokensArr>({
     request,
     {
       enabled,
+      onResponse(response) {
+        const { tokenAddress, spotPrice } = response;
+        const price = spotPrice !== undefined ? fromH256(spotPrice) : undefined;
+        const address =
+          tokenAddress !== undefined
+            ? fromH160ToAddress(tokenAddress)
+            : undefined;
+
+        if (price && address) {
+          const symbol = addressToSymbolMap.get(address);
+          if (symbol) {
+            setSpotPrices((prev) => ({ ...prev, [symbol]: price }));
+          }
+        }
+      },
     },
   );
-
-  const spotPrices = useMemo(() => {
-    if (data?.responses === undefined) return undefined;
-    const prices: Record<string, Price | undefined> = {};
-    const latestResponse = data.responses[0];
-
-    latestResponse.spotPriceInfo.forEach((info) => {
-      const { tokenAddress, spotPrice } = info;
-      const price = spotPrice !== undefined ? fromH256(spotPrice) : undefined;
-      const address =
-        tokenAddress !== undefined
-          ? fromH160ToAddress(tokenAddress)
-          : undefined;
-
-      if (price && address) {
-        const symbol = addressToSymbolMap.get(address);
-        if (symbol) {
-          prices[symbol] = price;
-        }
-      }
-    });
-
-    return prices;
-  }, [addressToSymbolMap, data?.responses]);
 
   return {
     spotPrices,
