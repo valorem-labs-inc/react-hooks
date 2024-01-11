@@ -3,6 +3,7 @@ export {
   authenticate,
   nonce,
   verify,
+  geofenced,
   session,
   signOut,
 } from './codegen/auth-Auth_connectquery';

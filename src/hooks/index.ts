@@ -1,3 +1,4 @@
+export { useIsGeofenced } from './useIsGeofenced';
 export { usePromiseClient } from './usePromiseClient';
 export { type UseRFQConfig, type UseRFQReturn, useRFQ } from './useRFQ';
 export {
