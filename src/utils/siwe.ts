@@ -60,35 +60,16 @@ export const getSIWEConfig = ({
   logger,
 }: GetSIWEConfigProps): SIWEConfig => {
   const config: SIWEConfig = {
-    // Indicate whether the SIWE process is enabled.
-    enabled: true,
-    // Specify the nonce refetch interval. Set to 0 to prevent creating new sessions.
-    nonceRefetchInterval: 0,
-    // Determines the session refetch interval.
-    sessionRefetchInterval: 60 * 1000 * 2, // 2 minutes
-    // Determines whether to sign out on account change.
-    signOutOnAccountChange: true,
-    // Determines whether to sign out on disconnect.
-    signOutOnDisconnect: true,
-    // Determines whether to sign out on network change.
-    signOutOnNetworkChange: true,
     // Provide a message creation function for the SIWE message.
     createMessage: createSIWEMessage,
 
     // Returns a promise which, upon resolution, returns the nonce.
     async getNonce() {
-      let nonce: string | undefined = queryClient.getQueryData([
-        'valorem.trade.v1.Auth',
-        'Nonce',
-      ]);
-      if (nonce === undefined) {
-        logger.debug('Fetching nonce...');
-        const { data } = await nonceQuery.refetch();
-        if (data?.nonce === undefined) throw new Error('Could not fetch nonce');
-        nonce = data.nonce;
-      }
-      logger.debug(`Current nonce: ${nonce}`);
-      return nonce;
+      logger.debug('Fetching nonce...');
+      const { data } = await nonceQuery.refetch();
+      if (data?.nonce === undefined) throw new Error('Could not fetch nonce');
+      logger.debug(`Current nonce: ${data.nonce}`);
+      return data.nonce;
     },
 
     // Returns a promise which, upon resolution, verifies the contents of the SIWE message.
@@ -109,16 +90,6 @@ export const getSIWEConfig = ({
       logger.debug('Signing out...');
       try {
         await signOutQuery.refetch();
-        queryClient.setQueryData(['valorem.trade.v1.Auth', 'Nonce'], undefined);
-        queryClient.setQueryData(
-          ['valorem.trade.v1.Auth', 'Session'],
-          undefined,
-        );
-        queryClient.setQueryData(
-          ['valorem.trade.v1.Auth', 'Authenticate'],
-          undefined,
-        );
-        queryClient.setQueryData(['valorem.trade.v1.Auth', 'signed-out'], true);
         logger.info('Signed out');
         return true;
       } catch (error) {
@@ -130,26 +101,6 @@ export const getSIWEConfig = ({
     // Returns a promise which, upon await, gets details about the current session.
     async getSession() {
       logger.debug('Getting session...');
-      await new Promise((resolve) => {
-        setTimeout(resolve, 250);
-      });
-      if (
-        queryClient.getQueryData(['valorem.trade.v1.Auth', 'signed-out']) ===
-        true
-      ) {
-        logger.debug('User is signed out');
-        queryClient.setQueryData(
-          ['valorem.trade.v1.Auth', 'signed-out'],
-          false,
-        );
-        return null;
-      }
-      queryClient.setQueryData(['valorem.trade.v1.Auth', 'Nonce'], undefined);
-      queryClient.setQueryData(['valorem.trade.v1.Auth', 'Session'], undefined);
-      queryClient.setQueryData(
-        ['valorem.trade.v1.Auth', 'Authenticate'],
-        undefined,
-      );
 
       // check auth endpoint to ensure session is valid
       const { data: authData } = await authenticateQuery.refetch({});
@@ -162,6 +113,7 @@ export const getSIWEConfig = ({
         logger.error('Authorized address does not match connected address');
         return null;
       }
+
       // get session data
       const { data: sessionData } = await sessionQuery.refetch();
       if (!sessionData?.address || !sessionData.chainId) {
