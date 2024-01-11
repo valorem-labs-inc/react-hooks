@@ -7,16 +7,16 @@ import type {
 } from '@bufbuild/protobuf';
 import type {
   CallOptions,
-  ConnectError,
   StreamResponse,
   Transport,
 } from '@connectrpc/connect';
+import { ConnectError } from '@connectrpc/connect';
 import type { ConnectQueryKey } from '@connectrpc/connect-query';
 import { useTransport } from '@connectrpc/connect-query';
 import { createAsyncIterable } from '@connectrpc/connect/protocol';
 import type { UseQueryOptions } from '@tanstack/react-query';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 import { useLogger } from '../context/Logger';
 
 /** Defines a standalone method and associated service  */
@@ -135,36 +135,22 @@ export const useStream = <
   const logger = useLogger();
 
   const streamIdRef = useRef<number>(0);
-  // State to track if the stream is actually open
-  const [isStreaming, setIsStreaming] = useState(false);
 
-  const query = useQuery({
+  return useQuery({
     ...queryOptions,
     queryKey,
-    queryFn: async () => {
-      if (queryOptions.enabled === false) {
-        // If the query is disabled, early return empty response
-        return {
-          done: true,
-          responses: [],
-        };
-      }
-
+    queryFn: async ({ signal: reactQuerySignal }) => {
       let responses: O[] = [];
       const streamId = streamIdRef.current;
       streamIdRef.current += 1;
-      logger.debug(`Starting stream #${streamId}`);
 
-      const abortController = new AbortController();
-      const { signal } = abortController;
+      reactQuerySignal?.addEventListener('abort', () => {
+        logger.debug(`Stream #${streamId} aborted due to react-query abort`);
+      });
+      const timeoutSignal = createTimeoutSignal(timeoutMs, logger, streamId);
+      const signal = mergeAbortSignals([reactQuerySignal, timeoutSignal]);
 
-      // Set the timeout and save its reference
-      const timeoutId = setTimeout(() => {
-        logger.debug(`Aborting stream #${streamId}`);
-        abortController.abort();
-      }, timeoutMs);
-
-      setIsStreaming(true); // Set the stream to open when starting
+      logger.debug(`Starting stream #${streamId}.`);
 
       try {
         for await (const res of handleStreamResponse(
@@ -180,7 +166,12 @@ export const useStream = <
             createAsyncIterable([input ?? {}]),
           ),
         )) {
-          clearTimeout(timeoutId); // Clear the timeout upon receiving a response
+          logger.debug(
+            `Received${
+              Object.keys(res).length === 0 ? ' empty ' : ' '
+            }response for stream #${streamId}`,
+            { res },
+          );
           onResponse?.(res); // Handle the response.
           responses = [res, ...responses];
           const newData: StreamResponseMessage<O> = {
@@ -198,17 +189,47 @@ export const useStream = <
         if (error instanceof Error && error.name === 'AbortError') {
           throw new Error('Stream aborted due to timeout');
         }
-        throw error;
+        logger.debug(ConnectError.from(error));
+        throw new Error(JSON.stringify(ConnectError.from(error)));
       } finally {
-        logger.log('Closing stream in cleanup...');
-        clearTimeout(timeoutId); // Ensure the timeout is cleared if the stream ends or errors
-        setIsStreaming(false); // Close the stream when it ends, errors, or aborts
+        logger.log(`Stream #${streamId} is closed...`);
       }
     },
   });
-
-  return {
-    ...query,
-    isStreaming,
-  };
 };
+
+function createTimeoutSignal(
+  timeoutMs: number,
+  logger: ReturnType<typeof useLogger>,
+  streamId: number,
+) {
+  const timeoutSignal = AbortSignal.timeout(timeoutMs);
+  timeoutSignal.addEventListener('abort', () => {
+    logger.debug(`Stream #${streamId} aborted due to timeout`);
+  });
+  return timeoutSignal;
+}
+
+function mergeAbortSignals(signals: (AbortSignal | undefined)[]) {
+  const controller = new AbortController();
+  const { signal: mergedSignal } = controller;
+
+  const abortListeners = signals.map((signal) => {
+    const abortListener = () => {
+      controller.abort();
+      cleanup();
+    };
+    signal?.addEventListener('abort', abortListener);
+    return abortListener;
+  });
+
+  const cleanup = () => {
+    abortListeners.forEach((listener, i) => {
+      signals[i]?.removeEventListener('abort', listener);
+    });
+  };
+
+  mergedSignal.addEventListener('abort', cleanup);
+
+  return mergedSignal;
+}

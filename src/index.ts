@@ -10,6 +10,7 @@ export {
   ValoremProvider,
 } from './context';
 export {
+  useIsGeofenced,
   usePromiseClient,
   type UseRFQConfig,
   type UseRFQReturn,
@@ -31,6 +32,7 @@ export {
   authenticate,
   nonce,
   verify,
+  geofenced,
   session,
   signOut,
   Fees,

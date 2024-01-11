@@ -1,7 +1,5 @@
-import type { SIWESession } from 'connectkit';
-import { SIWEProvider as Provider } from 'connectkit';
-import type { PropsWithChildren } from 'react';
-import { useMemo } from 'react';
+import { SIWEProvider as Provider, type SIWESession } from 'connectkit';
+import { type PropsWithChildren, useMemo } from 'react';
 import { useAccount } from 'wagmi';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getSIWEConfig } from '../utils/siwe';
@@ -25,7 +23,7 @@ export interface SIWEProps extends PropsWithChildren {
 
 // Configuration for SIWE queries.
 const siweQueryProps = {
-  enabled: true,
+  enabled: false,
   refetchInterval: 0,
   refetchOnWindowFocus: false,
   refetchOnMount: false,
@@ -47,15 +45,17 @@ export function SIWEProvider({ onSignIn, onSignOut, children }: SIWEProps) {
   const authClient = usePromiseClient(Auth);
   const queryClient = useQueryClient();
 
-  // Queries for nonce, authentication, session, and sign-out.
-  const nonceQuery = useQuery({
-    ...nonce.useQuery({}),
-    ...siweQueryProps,
-    enabled: false,
-  });
-
+  // Queries for authentication, nonce, session, and sign-out.
   const authenticateQuery = useQuery({
     ...authenticate.useQuery({}),
+    ...siweQueryProps,
+    enabled: true,
+    refetchOnMount: true,
+    retry: false,
+  });
+
+  const nonceQuery = useQuery({
+    ...nonce.useQuery({}),
     ...siweQueryProps,
   });
 
@@ -67,11 +67,9 @@ export function SIWEProvider({ onSignIn, onSignOut, children }: SIWEProps) {
   const signOutQuery = useQuery({
     ...signOut.useQuery({}),
     ...siweQueryProps,
-    enabled: false,
   });
 
-  // Configuration for the SIWE process.
-  const siweConfig = useMemo(() => {
+  const SIWEConfig = useMemo(() => {
     return getSIWEConfig({
       authClient,
       queryClient,
@@ -82,6 +80,7 @@ export function SIWEProvider({ onSignIn, onSignOut, children }: SIWEProps) {
       address,
       logger,
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- don't want to recompute when logger changes
   }, [
     authClient,
     queryClient,
@@ -90,11 +89,14 @@ export function SIWEProvider({ onSignIn, onSignOut, children }: SIWEProps) {
     sessionQuery,
     signOutQuery,
     address,
-    logger,
+    /* logger, */
   ]);
 
-  // Return null while nonce is initially loading.
-  if (nonceQuery.isInitialLoading) return null;
+  // wait for authenticate query to finish before mounting SIWEProvider
+  // this prevents a set-cookie race condition on the auth routes
+  if (!authenticateQuery.isFetchedAfterMount) {
+    return null;
+  }
 
   return (
     <Provider
@@ -102,7 +104,7 @@ export function SIWEProvider({ onSignIn, onSignOut, children }: SIWEProps) {
       onSignOut={() => {
         onSignOut?.();
       }}
-      {...siweConfig}
+      {...SIWEConfig}
     >
       {children}
     </Provider>
