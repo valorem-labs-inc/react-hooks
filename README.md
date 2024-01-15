@@ -123,6 +123,7 @@ function Component() {
 The package offers several hooks for various aspects of options trading:
 
 - useRFQ: Request for quote from market makers.
+- useSoftQuote: Get a soft quote from a market maker.
 - useSeaportFulfillOrder: Fulfill an order via Seaport.
   Each hook is designed to be intuitive and easy to integrate, abstracting away
   the complexities of the blockchain interactions.
