@@ -1,5 +1,18 @@
 # @valorem-labs-inc/react-hooks
 
+## 0.0.8
+
+### Patch Changes
+
+- 8109a48: fix CI workflow for NPM publishing
+- 016a055: drop parcel for tsup...
+- 3ebc40d: add arbitrum sepolia deployments; drop arbitrum goerli
+- 6580e92: add `useIsGeofenced` hook
+- 717e435: fix SIWE `Unknown Error` bug
+- 31bdd4b: use `window.location.host` in creation of SIWE message
+- 19ecb4a: pin `trade-interfaces` to v1.4.0
+- e3015bb: update `onResponse` props in useRFQ/useSoftQuote
+
 ## 0.0.7
 
 ### Patch Changes
