@@ -1,7 +1,7 @@
 import { SIWEProvider as Provider, type SIWESession } from 'connectkit';
 import { type PropsWithChildren, useMemo } from 'react';
-import { useAccount } from 'wagmi';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useAccount, useQueryClient } from 'wagmi';
+import { useQuery } from '@tanstack/react-query';
 import { getSIWEConfig } from '../utils/siwe';
 import { usePromiseClient } from '../hooks/usePromiseClient';
 import {
@@ -43,7 +43,7 @@ export function SIWEProvider({ onSignIn, onSignOut, children }: SIWEProps) {
   const { address } = useAccount();
   const logger = useLogger();
   const authClient = usePromiseClient(Auth);
-  const queryClient = useQueryClient();
+  const wagmiQueryClient = useQueryClient();
 
   // Queries for authentication, nonce, session, and sign-out.
   const authenticateQuery = useQuery({
@@ -72,7 +72,7 @@ export function SIWEProvider({ onSignIn, onSignOut, children }: SIWEProps) {
   const SIWEConfig = useMemo(() => {
     return getSIWEConfig({
       authClient,
-      queryClient,
+      wagmiQueryClient,
       nonceQuery,
       authenticateQuery,
       sessionQuery,
@@ -83,7 +83,7 @@ export function SIWEProvider({ onSignIn, onSignOut, children }: SIWEProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- don't want to recompute when logger changes
   }, [
     authClient,
-    queryClient,
+    wagmiQueryClient,
     nonceQuery,
     authenticateQuery,
     sessionQuery,

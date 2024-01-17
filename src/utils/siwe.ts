@@ -32,7 +32,7 @@ const createSIWEMessage: SIWEConfig['createMessage'] = ({
  */
 interface GetSIWEConfigProps {
   authClient: PromiseClient<typeof Auth>;
-  queryClient: QueryClient;
+  wagmiQueryClient: QueryClient;
   nonceQuery: UseQueryResult<NonceText>;
   authenticateQuery: UseQueryResult<H160>;
   sessionQuery: UseQueryResult<SiweSession>;
@@ -51,7 +51,7 @@ interface GetSIWEConfigProps {
  */
 export const getSIWEConfig = ({
   authClient,
-  queryClient,
+  wagmiQueryClient,
   nonceQuery,
   authenticateQuery,
   sessionQuery,
@@ -65,76 +65,100 @@ export const getSIWEConfig = ({
 
     // Returns a promise which, upon resolution, returns the nonce.
     async getNonce() {
-      logger.debug('Fetching nonce...');
+      logger.debug('SIWE: Fetching nonce...');
       const { data } = await nonceQuery.refetch();
       if (data?.nonce === undefined) throw new Error('Could not fetch nonce');
-      logger.debug(`Current nonce: ${data.nonce}`);
+      logger.debug(`SIWE: Current nonce: ${data.nonce}`);
       return data.nonce;
     },
 
     // Returns a promise which, upon resolution, verifies the contents of the SIWE message.
     async verifyMessage({ message, signature }) {
-      logger.debug('Verifying message...');
-      const res = await authClient.verify({
-        body: JSON.stringify({ message, signature }),
-      });
-      // verify address returned by Trade API matches current address
-      const verifiedAddress = fromH160ToAddress(res).toLowerCase();
-      logger.debug('Message verified successfully');
-      return verifiedAddress === address?.toLowerCase();
+      logger.debug('SIWE: Verifying message...');
+
+      let verified = false;
+      try {
+        const res = await authClient.verify({
+          body: JSON.stringify({ message, signature }),
+        });
+        // verify address returned by Trade API matches current address
+        const verifiedAddress = fromH160ToAddress(res).toLowerCase();
+        logger.info('SIWE: Signed in');
+        verified = verifiedAddress === address?.toLowerCase();
+      } catch (error) {
+        logger.error('SIWE: Error verifying message', { error });
+      }
+
+      if (!verified) {
+        logger.warn('SIWE: Fetching new nonce after failed verification...');
+        await wagmiQueryClient.refetchQueries(['ckSiweNonce']);
+      }
+
+      return verified;
     },
 
     // Returns a promise which, upon resolution and disconnect/reconnect of the
     // client terminates the SIWE session.
     async signOut() {
-      logger.debug('Signing out...');
+      logger.debug('SIWE: Signing out...');
       try {
         await signOutQuery.refetch();
-        logger.info('Signed out');
+        logger.info('SIWE: Signed out');
         return true;
       } catch (error) {
-        logger.error('Error signing out');
+        logger.error('SIWE: Error signing out', { error });
         return false;
       }
     },
 
     // Returns a promise which, upon await, gets details about the current session.
     async getSession() {
-      logger.debug('Getting session...');
-
-      // check auth endpoint to ensure session is valid
-      const { data: authData } = await authenticateQuery.refetch({});
-      if (authData === undefined) {
-        logger.warn('Could not get auth data');
-        return null;
-      }
-      const authorizedAddress = fromH160ToAddress(authData);
-      if (authorizedAddress.toLowerCase() !== address?.toLowerCase()) {
-        logger.error('Authorized address does not match connected address');
-        return null;
-      }
-
-      // get session data
-      const { data: sessionData } = await sessionQuery.refetch();
-      if (!sessionData?.address || !sessionData.chainId) {
-        logger.warn('No session data found');
-        return null;
-      }
-      const sessionAddress = fromH160ToAddress(sessionData.address);
-      if (sessionAddress.toLowerCase() === address.toLowerCase()) {
-        logger.debug('Session is valid');
-        queryClient.setQueryData(
-          ['valorem.trade.v1.Auth', 'signed-out'],
-          false,
+      logger.debug('SIWE: Getting session...');
+      try {
+        // check auth endpoint to ensure session is valid
+        const { data: authData, error: authError } =
+          await authenticateQuery.refetch({});
+        if (authData === undefined || authError !== null) {
+          logger.debug('SIWE: Could not get auth data', { authError });
+          return null;
+        }
+        const authorizedAddress = fromH160ToAddress(authData);
+        if (authorizedAddress.toLowerCase() !== address?.toLowerCase()) {
+          logger.error(
+            'SIWE: Authorized address does not match connected address',
+          );
+          return null;
+        }
+        logger.debug(
+          'SIWE: Authorized address matches connected address. Now checking /session endpoint.',
         );
-        return {
-          address: sessionAddress,
-          chainId: Number(fromH256(sessionData.chainId).toString()),
-        };
-      }
 
-      logger.error('Auth route does not match session data');
-      return null;
+        // get session data
+        const { data: sessionData, error: sessionError } =
+          await sessionQuery.refetch();
+        if (
+          !sessionData?.address ||
+          !sessionData.chainId ||
+          sessionError !== null
+        ) {
+          logger.debug('SIWE: No session data found', { sessionError });
+          return null;
+        }
+        const sessionAddress = fromH160ToAddress(sessionData.address);
+        if (sessionAddress.toLowerCase() === address.toLowerCase()) {
+          logger.debug('SIWE: Session is valid');
+          return {
+            address: sessionAddress,
+            chainId: Number(fromH256(sessionData.chainId).toString()),
+          };
+        }
+
+        logger.error('SIWE: Auth route does not match session data');
+        return null;
+      } catch (error) {
+        logger.error('SIWE: Error getting session', { error });
+        return null;
+      }
     },
   };
   return config;
